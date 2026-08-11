@@ -1,0 +1,13 @@
+[project]
+name = "literature-agent"
+version = "0.1.0"
+description = "Add your description here"
+requires-python = ">=3.11"
+dependencies = [
+    "anthropic>=0.96.0",
+    "openai>=2.32.0",
+    "pypdf>=6.10.2",
+    "python-docx>=1.2.0",
+    "python-dotenv>=1.2.2",
+    "requests>=2.33.1",
+]

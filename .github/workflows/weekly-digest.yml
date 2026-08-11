@@ -1,0 +1,49 @@
+name: Weekly literature digest
+
+# Runs the literature agent on GitHub's servers, so the Sunday digest is
+# delivered whether or not your own computer is turned on.
+
+on:
+  schedule:
+    # 12:17 UTC every Sunday. GitHub cron is ALWAYS UTC and does not follow
+    # daylight saving time, so in US Eastern this lands at 8:17am (EDT, summer)
+    # or 7:17am (EST, winter). Change the hour below to shift your local time.
+    # Note: GitHub may delay scheduled runs by a few minutes under load.
+    - cron: "17 12 * * 0"
+  workflow_dispatch: {}   # also allow manual runs (Actions tab or `gh workflow run`)
+
+jobs:
+  digest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      # All values come from encrypted repository secrets — see the README.
+      ANTHROPIC_API_KEY:        ${{ secrets.ANTHROPIC_API_KEY }}
+      SMTP_USERNAME:            ${{ secrets.SMTP_USERNAME }}
+      SMTP_PASSWORD:            ${{ secrets.SMTP_PASSWORD }}
+      EMAIL_TO:                 ${{ secrets.EMAIL_TO }}
+      NCBI_API_KEY:             ${{ secrets.NCBI_API_KEY }}
+      SEMANTIC_SCHOLAR_API_KEY: ${{ secrets.SEMANTIC_SCHOLAR_API_KEY }}
+      PROFILE_CACHE_B64:        ${{ secrets.PROFILE_CACHE_B64 }}
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4
+
+      - name: Install uv (and Python 3.11)
+        uses: astral-sh/setup-uv@v5
+        with:
+          python-version: "3.11"
+          enable-cache: true
+
+      - name: Restore researcher profile (optional)
+        # Your interests/ PDFs are gitignored, so the profile cannot be rebuilt
+        # in the cloud. If you uploaded PROFILE_CACHE_B64, decode it here;
+        # otherwise the agent falls back to topic-only relevance scoring.
+        if: env.PROFILE_CACHE_B64 != ''
+        run: printf '%s' "$PROFILE_CACHE_B64" | base64 -d > _profile_cache.json
+
+      - name: Install dependencies
+        run: uv sync --frozen
+
+      - name: Search, score, and email the digest
+        run: uv run python run.py

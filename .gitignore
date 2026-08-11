@@ -1,0 +1,19 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+# Personal content — not shared
+interests/
+_profile_cache.json
+_notes/
+.env
+
+# Runtime logs
+*.log
