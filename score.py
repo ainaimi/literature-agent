@@ -6,7 +6,9 @@ import llm
 
 SYSTEM_PROMPT = """
 You are a research assistant helping a quantitative epidemiologist and statistician
-evaluate new papers for relevance and importance to their work.
+evaluate new papers for relevance and importance to their work. Address the
+researcher directly in the second person ("you"/"your"), never by name and never in
+the third person.
 Your responses must be valid JSON. Be precise and concise.
 """.strip()
 
@@ -43,9 +45,12 @@ TASK:
 2. Write exactly 4 bullet points summarizing the paper's main contributions.
    Each bullet: 1–2 sentences. Be specific. No filler.
 
-3. Write exactly 1 bullet point explaining why THIS researcher specifically
-   should read this paper. Reference their methods, domains, or research questions.
-   If the score is below 6, write "N/A".
+3. Write exactly 1 bullet point explaining why you specifically should read this
+   paper, referencing your own methods, domains, or research questions. Address the
+   reader directly as "you"/"your" — never by name and never in the third person
+   (no "the researcher", no "This paper addresses Naimi's interests"; instead
+   "This paper directly addresses your interest in ..."). If the score is below 6,
+   write "N/A".
 
 Respond with valid JSON only, in this exact format:
 {{
@@ -87,10 +92,12 @@ Respond with valid JSON only, in this exact format:
         return None
 
 
-def score_all(papers: list[dict], researcher_profile: str) -> list[dict]:
+def score_all(papers: list[dict], researcher_profile: str) -> tuple[list[dict], list[dict]]:
     """
     Score all papers concurrently, attach results to each, drop papers below threshold.
-    Returns list sorted by score descending, capped at TOP_N_PAPERS.
+    Returns (top, all_passed): `top` is the top TOP_N_PAPERS for the email digest;
+    `all_passed` is every paper that passed the threshold, sorted by score descending
+    (used for the full-list attachment). Both lists share the same dicts.
     """
     from concurrent.futures import ThreadPoolExecutor, as_completed
 
@@ -122,4 +129,4 @@ def score_all(papers: list[dict], researcher_profile: str) -> list[dict]:
     scored.sort(key=lambda p: p["score"], reverse=True)
     top = scored[:config.TOP_N_PAPERS]
     print(f"[score] {len(scored)} papers passed threshold → keeping top {len(top)}")
-    return top, len(scored)
+    return top, scored
