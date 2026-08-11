@@ -267,5 +267,6 @@ tier). Local Ollama is free but slower and lower quality.
 | `profile.py` | Builds the researcher profile from `interests/`; cached in `_profile_cache.json` |
 | `llm.py` | Provider-agnostic wrapper (Anthropic / OpenAI / Ollama) |
 | `interests/` | Drop your papers here (gitignored — personal to each user) |
+| `_last_run.json` / `_runs/` | Structured record of each run's full scored set (gitignored); re-render a digest without re-scoring |
 | `.github/workflows/weekly-digest.yml` | The GitHub Actions schedule (Option A) |
 | `.env.example` | Template for your `~/.env` credentials file |

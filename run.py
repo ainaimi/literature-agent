@@ -7,9 +7,10 @@
 #   uv run python run.py --search-only  # search only, print titles, no LLM calls
 
 import argparse
+import json
 import os
 import sys
-from datetime import datetime
+from datetime import datetime, timezone
 
 import config
 import profile
@@ -60,6 +61,12 @@ def main():
         print("No papers passed the relevance threshold. Exiting.")
         sys.exit(0)
 
+    # Persist the full scored set as structured data. This decouples data from
+    # presentation (re-render the email/attachment without re-scoring) and is the
+    # per-run record a future web app would store per user.
+    run_date = datetime.now().strftime("%Y-%m-%d")
+    _persist_run(papers, all_scored, passed_count, run_date)
+
     # Step 4: Format and send
     print(f"\n[4/4] Formatting digest (top {len(top_papers)} of {passed_count} that passed)...")
     note = f"Full scored list ({passed_count} papers) attached as an HTML file."
@@ -72,7 +79,7 @@ def main():
     print(report)
     print("=" * 60)
 
-    attachment_name = f"full-scored-list-{datetime.now().strftime('%Y-%m-%d')}.html"
+    attachment_name = f"full-scored-list-{run_date}.html"
 
     if args.dry_run:
         preview_path = "_full-scored-list-preview.html"
@@ -85,6 +92,32 @@ def main():
         print(f"\nSending to {os.environ.get('EMAIL_TO', 'recipient')}...")
         send.send_email(report_html, attachment=(attachment_name, full_list_html))
         print("Sent.")
+
+
+def _persist_run(papers: list[dict], all_scored: list[dict],
+                 passed_count: int, run_date: str):
+    """Write the full scored set to _last_run.json (latest) and _runs/<date>.json
+    (dated archive). Both are gitignored — they hold your scored reading data, and
+    let you re-render a digest without paying to re-score."""
+    record = {
+        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "date": run_date,
+        "total_searched": len(papers),
+        "passed_count": passed_count,
+        "threshold": config.RELEVANCE_THRESHOLD,
+        "lookback_days": config.LOOKBACK_DAYS,
+        "top_n": config.TOP_N_PAPERS,
+        "provider": config.LLM_PROVIDER,
+        "model": config.LLM_MODEL,
+        "papers": all_scored,
+    }
+    payload = json.dumps(record, indent=2, ensure_ascii=False)
+    with open("_last_run.json", "w", encoding="utf-8") as f:
+        f.write(payload)
+    os.makedirs("_runs", exist_ok=True)
+    with open(os.path.join("_runs", f"{run_date}.json"), "w", encoding="utf-8") as f:
+        f.write(payload)
+    print(f"  Saved run data → _last_run.json and _runs/{run_date}.json")
 
 
 if __name__ == "__main__":

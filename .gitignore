@@ -12,6 +12,8 @@ wheels/
 # Personal content — not shared
 interests/
 _profile_cache.json
+_last_run.json
+_runs/
 _notes/
 .env
 
