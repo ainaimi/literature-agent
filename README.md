@@ -44,7 +44,9 @@ can also be run locally on demand.
 3. **Score** each remaining paper from 0–10 against a *researcher profile* the
    agent builds automatically from whatever PDFs / Word / LaTeX files you drop
    into `interests/`.
-4. **Email** you the top *N* papers (you define *N*), formatted as an HTML digest.
+4. **Email** you the top *N* papers (you define *N*), formatted as an HTML digest,
+   with the complete list of every paper that passed the threshold attached as an
+   HTML file.
 
 ---
 

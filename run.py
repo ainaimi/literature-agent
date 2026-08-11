@@ -9,6 +9,7 @@
 import argparse
 import os
 import sys
+from datetime import datetime
 
 import config
 import profile
@@ -52,26 +53,37 @@ def main():
 
     # Step 3: Score and summarize
     print(f"\n[3/4] Scoring {len(papers)} papers with {config.LLM_PROVIDER}/{config.LLM_MODEL}...")
-    top_papers, passed_count = score.score_all(papers, researcher_profile)
+    top_papers, all_scored = score.score_all(papers, researcher_profile)
+    passed_count = len(all_scored)
 
     if not top_papers:
         print("No papers passed the relevance threshold. Exiting.")
         sys.exit(0)
 
     # Step 4: Format and send
-    print(f"\n[4/4] Formatting digest ({len(top_papers)} papers)...")
-    report      = digest.format_digest(top_papers, len(papers), passed_count)
-    report_html = digest.format_digest_html(top_papers, len(papers), passed_count)
+    print(f"\n[4/4] Formatting digest (top {len(top_papers)} of {passed_count} that passed)...")
+    note = f"Full scored list ({passed_count} papers) attached as an HTML file."
+    report         = digest.format_digest(top_papers, len(papers), passed_count)
+    report_html    = digest.format_digest_html(top_papers, len(papers), passed_count,
+                                                full_list_note=note)
+    full_list_html = digest.format_full_list_html(all_scored, len(papers))
 
     print("\n" + "=" * 60)
     print(report)
     print("=" * 60)
 
+    attachment_name = f"full-scored-list-{datetime.now().strftime('%Y-%m-%d')}.html"
+
     if args.dry_run:
+        preview_path = "_full-scored-list-preview.html"
+        with open(preview_path, "w", encoding="utf-8") as f:
+            f.write(full_list_html)
         print("\n[dry-run] Digest printed above. Not sent.")
+        print(f"[dry-run] Full scored list ({passed_count} papers) written to "
+              f"{preview_path} — open it to preview the email attachment.")
     else:
         print(f"\nSending to {os.environ.get('EMAIL_TO', 'recipient')}...")
-        send.send_email(report_html)
+        send.send_email(report_html, attachment=(attachment_name, full_list_html))
         print("Sent.")
 
 

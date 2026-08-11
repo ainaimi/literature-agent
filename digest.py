@@ -43,11 +43,9 @@ def format_digest(papers: list[dict], total_searched: int = 0, passed_count: int
     return "\n".join(lines)
 
 
-def format_digest_html(papers: list[dict], total_searched: int = 0, passed_count: int = 0) -> str:
-    """HTML digest for email delivery."""
-    today = datetime.now().strftime("%B %d, %Y")
+# ─── Shared HTML building blocks ─────────────────────────────────────────────
 
-    css = """
+_CSS = """
     body { font-family: Georgia, 'Times New Roman', serif; max-width: 680px;
            margin: 0 auto; padding: 24px 16px; color: #1a1a1a; background: #fff; }
     h1   { font-size: 1.3em; font-weight: bold; border-bottom: 2px solid #1a1a1a;
@@ -73,41 +71,30 @@ def format_digest_html(papers: list[dict], total_searched: int = 0, passed_count
            border-left: 3px solid #ccc; padding-left: 10px; margin: 4px 0 0; }
     """
 
-    stats = (f"{total_searched} papers searched &nbsp;·&nbsp; "
-             f"{passed_count} passed threshold (≥{config.RELEVANCE_THRESHOLD}/10) &nbsp;·&nbsp; "
-             f"top {len(papers)} shown")
 
-    parts = [f"""<!DOCTYPE html>
-<html lang="en">
-<head><meta charset="utf-8"><style>{css}</style></head>
-<body>
-<h1>Weekly Literature Digest</h1>
-<div class="date">{today}</div>
-<div class="date">{stats}</div>
-"""]
+def _paper_block_html(i: int, paper: dict) -> str:
+    """Render one paper as an HTML block — shared by the email digest and the
+    full-list attachment so both stay visually identical."""
+    title   = paper.get("title", "No title")
+    url     = paper.get("url", "")
+    authors = paper.get("authors", "Unknown")
+    year    = paper.get("year", "")
+    source  = paper.get("source", "").replace("_", " ").title()
+    cluster = paper.get("cluster", "").replace("_", " ").title()
+    score   = paper.get("score", "?")
+    summary_bullets = paper.get("summary_bullets", [])
+    read_bullets    = paper.get("read_bullets", [])
 
-    for i, paper in enumerate(papers, 1):
-        title   = paper.get("title", "No title")
-        url     = paper.get("url", "")
-        authors = paper.get("authors", "Unknown")
-        year    = paper.get("year", "")
-        source  = paper.get("source", "").replace("_", " ").title()
-        cluster = paper.get("cluster", "").replace("_", " ").title()
-        score   = paper.get("score", "?")
-        summary_bullets = paper.get("summary_bullets", [])
-        read_bullets    = paper.get("read_bullets", [])
+    title_html = (f'<a href="{url}">{_esc(title)}</a>' if url else _esc(title))
+    authors_short = authors[:100] + ("…" if len(authors) > 100 else "")
 
-        title_html = (f'<a href="{url}">{_esc(title)}</a>' if url
-                      else _esc(title))
-        authors_short = authors[:100] + ("…" if len(authors) > 100 else "")
+    bullets_html = "".join(f"<li>{_esc(b)}</li>" for b in summary_bullets)
+    why_html = ""
+    if read_bullets and read_bullets[0] != "N/A":
+        why_html = (f'<div class="why-label">Why read this</div>'
+                    f'<div class="why">{_esc(read_bullets[0])}</div>')
 
-        bullets_html = "".join(f"<li>{_esc(b)}</li>" for b in summary_bullets)
-        why_html = ""
-        if read_bullets and read_bullets[0] != "N/A":
-            why_html = (f'<div class="why-label">Why read this</div>'
-                        f'<div class="why">{_esc(read_bullets[0])}</div>')
-
-        parts.append(f"""<div class="paper">
+    return f"""<div class="paper">
   <div class="num">#{i}</div>
   <div class="title">{title_html}</div>
   <div class="meta">
@@ -120,10 +107,48 @@ def format_digest_html(papers: list[dict], total_searched: int = 0, passed_count
   <ul>{bullets_html}</ul>
   {why_html}
 </div>
-""")
+"""
 
-    parts.append("</body></html>")
-    return "\n".join(parts)
+
+def _html_page(heading: str, date: str, stats: str, body: str,
+               note: str = "", title: str = "") -> str:
+    """Wrap rendered paper blocks in a full HTML document with shared styling."""
+    note_html = f'<div class="date">📎 {_esc(note)}</div>\n' if note else ""
+    page_title = title or heading
+    return f"""<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="utf-8"><title>{_esc(page_title)}</title><style>{_CSS}</style></head>
+<body>
+<h1>{_esc(heading)}</h1>
+<div class="date">{date}</div>
+<div class="date">{stats}</div>
+{note_html}{body}
+</body></html>"""
+
+
+def format_digest_html(papers: list[dict], total_searched: int = 0,
+                       passed_count: int = 0, full_list_note: str = "") -> str:
+    """HTML digest for email delivery — the top-N papers, with an optional note
+    pointing at the attached full list."""
+    today = datetime.now().strftime("%B %d, %Y")
+    stats = (f"{total_searched} papers searched &nbsp;·&nbsp; "
+             f"{passed_count} passed threshold (≥{config.RELEVANCE_THRESHOLD}/10) &nbsp;·&nbsp; "
+             f"top {len(papers)} shown")
+    body = "\n".join(_paper_block_html(i, p) for i, p in enumerate(papers, 1))
+    return _html_page("Weekly Literature Digest", today, stats, body,
+                      note=full_list_note)
+
+
+def format_full_list_html(papers: list[dict], total_searched: int = 0) -> str:
+    """Standalone HTML page listing every paper that passed the threshold —
+    attached to the email so the full set is available beyond the top-N digest."""
+    today = datetime.now().strftime("%B %d, %Y")
+    stats = (f"{total_searched} papers searched &nbsp;·&nbsp; "
+             f"{len(papers)} passed threshold (≥{config.RELEVANCE_THRESHOLD}/10) &nbsp;·&nbsp; "
+             f"all {len(papers)} shown")
+    body = "\n".join(_paper_block_html(i, p) for i, p in enumerate(papers, 1))
+    return _html_page("Full Scored List", today, stats, body,
+                      title=f"Full Scored List — {today}")
 
 
 def _esc(text: str) -> str:

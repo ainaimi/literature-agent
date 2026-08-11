@@ -17,3 +17,6 @@ _notes/
 
 # Runtime logs
 *.log
+
+# Preview artifacts (AI-generated during --dry-run)
+_full-scored-list-preview.html
