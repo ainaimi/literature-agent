@@ -1,32 +1,30 @@
 # send.py — email delivery via SMTP
 
-import os
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-from dotenv import load_dotenv
-
-import config
-
-load_dotenv(os.path.expanduser("~/.env"))
 
 
-def send_email(html_body: str, attachment: tuple[str, str] | None = None):
+def send_email(html_body: str, *, subject: str, to_addr: str,
+               credentials, attachment: tuple[str, str] | None = None):
     """Send the HTML digest via SMTP.
 
+    credentials: a models.PlatformCredentials holding the SMTP account.
     attachment: optional (filename, html_content) attached to the message as a
     downloadable HTML file — used for the full scored-paper list.
     """
-    host     = os.environ.get("SMTP_HOST", "smtp.gmail.com")
-    port     = int(os.environ.get("SMTP_PORT", "587"))
-    username = os.environ["SMTP_USERNAME"]
-    password = os.environ["SMTP_PASSWORD"]
-    from_addr = os.environ.get("EMAIL_FROM", username)  # default: same as SMTP_USERNAME
-    to_addr   = os.environ["EMAIL_TO"]
+    if not to_addr:
+        raise ValueError("No recipient: set EMAIL_TO in the environment "
+                         "(or email_to in the tenant settings).")
+    if not credentials.smtp_username or not credentials.smtp_password:
+        raise ValueError("SMTP_USERNAME / SMTP_PASSWORD not set in the "
+                         "environment — cannot send email.")
+
+    from_addr = credentials.email_from or credentials.smtp_username
 
     # multipart/mixed so the message can carry both the body and an attachment.
     msg = MIMEMultipart("mixed")
-    msg["Subject"] = config.EMAIL_SUBJECT
+    msg["Subject"] = subject
     msg["From"]    = from_addr
     msg["To"]      = to_addr
 
@@ -42,8 +40,8 @@ def send_email(html_body: str, attachment: tuple[str, str] | None = None):
         part.add_header("Content-Disposition", "attachment", filename=filename)
         msg.attach(part)
 
-    with smtplib.SMTP(host, port) as smtp:
+    with smtplib.SMTP(credentials.smtp_host, credentials.smtp_port) as smtp:
         smtp.ehlo()
         smtp.starttls()
-        smtp.login(username, password)
+        smtp.login(credentials.smtp_username, credentials.smtp_password)
         smtp.sendmail(from_addr, [to_addr], msg.as_string())

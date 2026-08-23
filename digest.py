@@ -1,7 +1,6 @@
 # digest.py — formats the weekly digest (plain text for terminal, HTML for email)
 
 from datetime import datetime
-import config
 
 
 def format_digest(papers: list[dict], total_searched: int = 0, passed_count: int = 0) -> str:
@@ -127,24 +126,26 @@ def _html_page(heading: str, date: str, stats: str, body: str,
 
 
 def format_digest_html(papers: list[dict], total_searched: int = 0,
-                       passed_count: int = 0, full_list_note: str = "") -> str:
+                       passed_count: int = 0, full_list_note: str = "", *,
+                       threshold: int = 6) -> str:
     """HTML digest for email delivery — the top-N papers, with an optional note
     pointing at the attached full list."""
     today = datetime.now().strftime("%B %d, %Y")
     stats = (f"{total_searched} papers searched &nbsp;·&nbsp; "
-             f"{passed_count} passed threshold (≥{config.RELEVANCE_THRESHOLD}/10) &nbsp;·&nbsp; "
+             f"{passed_count} passed threshold (≥{threshold}/10) &nbsp;·&nbsp; "
              f"top {len(papers)} shown")
     body = "\n".join(_paper_block_html(i, p) for i, p in enumerate(papers, 1))
     return _html_page("Weekly Literature Digest", today, stats, body,
                       note=full_list_note)
 
 
-def format_full_list_html(papers: list[dict], total_searched: int = 0) -> str:
+def format_full_list_html(papers: list[dict], total_searched: int = 0, *,
+                          threshold: int = 6) -> str:
     """Standalone HTML page listing every paper that passed the threshold —
     attached to the email so the full set is available beyond the top-N digest."""
     today = datetime.now().strftime("%B %d, %Y")
     stats = (f"{total_searched} papers searched &nbsp;·&nbsp; "
-             f"{len(papers)} passed threshold (≥{config.RELEVANCE_THRESHOLD}/10) &nbsp;·&nbsp; "
+             f"{len(papers)} passed threshold (≥{threshold}/10) &nbsp;·&nbsp; "
              f"all {len(papers)} shown")
     body = "\n".join(_paper_block_html(i, p) for i, p in enumerate(papers, 1))
     return _html_page("Full Scored List", today, stats, body,

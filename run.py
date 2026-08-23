@@ -12,12 +12,15 @@ import os
 import sys
 from datetime import datetime, timezone
 
+from dotenv import load_dotenv
+
 import config
 import profiles
 import search
 import score
 import digest
 import send
+from models import PlatformCredentials, UserSettings
 
 
 def main():
@@ -27,6 +30,14 @@ def main():
     parser.add_argument("--search-only", action="store_true",
                         help="Search databases only, print titles, skip LLM and email")
     args = parser.parse_args()
+
+    # The single place environment loading happens. Keep the explicit ~/.env
+    # path — bare load_dotenv() would search the CWD instead. On CI there is
+    # no ~/.env and secrets arrive as real env vars (dotenv never overrides).
+    load_dotenv(os.path.expanduser("~/.env"))
+    settings = UserSettings.from_config_module(config)
+    creds = PlatformCredentials.from_env(
+        s2_key_override=getattr(config, "SEMANTIC_SCHOLAR_API_KEY", ""))
 
     print("=" * 60)
     print("Literature Agent")
@@ -72,8 +83,10 @@ def main():
     note = f"Full scored list ({passed_count} papers) attached as an HTML file."
     report         = digest.format_digest(top_papers, len(papers), passed_count)
     report_html    = digest.format_digest_html(top_papers, len(papers), passed_count,
-                                                full_list_note=note)
-    full_list_html = digest.format_full_list_html(all_scored, len(papers))
+                                                full_list_note=note,
+                                                threshold=settings.relevance_threshold)
+    full_list_html = digest.format_full_list_html(all_scored, len(papers),
+                                                  threshold=settings.relevance_threshold)
 
     print("\n" + "=" * 60)
     print(report)
@@ -89,8 +102,10 @@ def main():
         print(f"[dry-run] Full scored list ({passed_count} papers) written to "
               f"{preview_path} — open it to preview the email attachment.")
     else:
-        print(f"\nSending to {os.environ.get('EMAIL_TO', 'recipient')}...")
-        send.send_email(report_html, attachment=(attachment_name, full_list_html))
+        print(f"\nSending to {settings.email_to or 'recipient'}...")
+        send.send_email(report_html, subject=settings.email_subject,
+                        to_addr=settings.email_to, credentials=creds,
+                        attachment=(attachment_name, full_list_html))
         print("Sent.")
 
 
