@@ -13,7 +13,7 @@ import sys
 from datetime import datetime, timezone
 
 import config
-import profile
+import profiles
 import search
 import score
 import digest
@@ -34,7 +34,7 @@ def main():
 
     # Step 1: Load relevance profile
     print("\n[1/4] Loading researcher profile...")
-    researcher_profile = profile.get_profile()
+    researcher_profile = profiles.get_profile()
     print(f"  Profile: {researcher_profile[:120]}...")
 
     # Step 2: Search all databases

@@ -264,7 +264,7 @@ tier). Local Ollama is free but slower and lower quality.
 | `score.py` | Concurrent LLM scoring via `ThreadPoolExecutor` |
 | `digest.py` | Formats the plain-text and HTML digest |
 | `send.py` | SMTP email delivery |
-| `profile.py` | Builds the researcher profile from `interests/`; cached in `_profile_cache.json` |
+| `profiles.py` | Builds the researcher profile from `interests/`; cached in `_profile_cache.json` |
 | `llm.py` | Provider-agnostic wrapper (Anthropic / OpenAI / Ollama) |
 | `interests/` | Drop your papers here (gitignored — personal to each user) |
 | `_last_run.json` / `_runs/` | Structured record of each run's full scored set (gitignored); re-render a digest without re-scoring |
