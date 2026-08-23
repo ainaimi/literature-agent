@@ -71,8 +71,14 @@ def main():
         sys.exit(0)
 
     # Step 3: Score and summarize
-    print(f"\n[3/4] Scoring {len(papers)} papers with {config.LLM_PROVIDER}/{config.LLM_MODEL}...")
-    top_papers, all_scored = score.score_all(papers, researcher_profile)
+    print(f"\n[3/4] Scoring {len(papers)} papers with {settings.llm_provider}/{settings.llm_model}...")
+    top_papers, all_scored = score.score_all(
+        papers, researcher_profile,
+        llm_call=llm_call,
+        threshold=settings.relevance_threshold,
+        top_n=settings.top_n_papers,
+        persona=settings.persona,
+        example_name=settings.example_name)
     passed_count = len(all_scored)
 
     if not top_papers:
