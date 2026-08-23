@@ -1,14 +1,10 @@
-# profile.py — builds and caches your researcher relevance profile
-# from files in the interests/ folder.
+# profiles.py — builds and caches a researcher relevance profile
+# from files in an interests folder.
 
-import os
-import json
 import hashlib
-from pathlib import Path
+import json
 from datetime import datetime, timezone
-
-import config
-import llm
+from pathlib import Path
 
 
 # ─── Text extraction ─────────────────────────────────────────────────────────
@@ -55,8 +51,8 @@ def _folder_hash(interests_dir: Path) -> str:
     return hashlib.md5("|".join(parts).encode()).hexdigest()
 
 
-def _load_cache() -> dict | None:
-    cache_path = Path(config.PROFILE_CACHE_FILE)
+def _load_cache(cache_file: str) -> dict | None:
+    cache_path = Path(cache_file)
     if not cache_path.exists():
         return None
     try:
@@ -65,26 +61,26 @@ def _load_cache() -> dict | None:
         return None
 
 
-def _save_cache(profile_text: str, folder_hash: str):
+def _save_cache(cache_file: str, profile_text: str, folder_hash: str):
     cache = {
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "folder_hash": folder_hash,
         "profile": profile_text,
     }
-    Path(config.PROFILE_CACHE_FILE).write_text(json.dumps(cache, indent=2))
+    Path(cache_file).write_text(json.dumps(cache, indent=2))
 
 
-def _cache_is_fresh(cache: dict, current_hash: str) -> bool:
+def _cache_is_fresh(cache: dict, current_hash: str, max_age_days: int) -> bool:
     if cache.get("folder_hash") != current_hash:
         return False  # files have changed
     generated_at = datetime.fromisoformat(cache["generated_at"])
     age_days = (datetime.now(timezone.utc) - generated_at).days
-    return age_days < config.PROFILE_MAX_AGE_DAYS
+    return age_days < max_age_days
 
 
 # ─── Profile generation ──────────────────────────────────────────────────────
 
-def _generate_profile(texts: dict[str, str]) -> str:
+def _generate_profile(texts: dict[str, str], llm_call) -> str:
     """Ask the LLM to summarize the researcher's interests from their papers."""
     combined = "\n\n---\n\n".join(
         f"FILE: {name}\n{text}" for name, text in texts.items()
@@ -107,23 +103,24 @@ Write only the profile text. No headers, no bullet points.
 """.strip()
 
     print("  [profile] Generating relevance profile from interests/ folder...")
-    return llm.call_llm(prompt)
+    return llm_call(prompt)
 
 
 # ─── Public interface ────────────────────────────────────────────────────────
 
-def get_profile() -> str:
+def get_profile(*, interests_dir: str, cache_file: str, max_age_days: int,
+                llm_call) -> str:
     """
     Return the researcher's relevance profile.
-    Uses cached version if interests/ files haven't changed and cache isn't stale.
-    Regenerates otherwise.
+    Uses cached version if the interests files haven't changed and cache isn't stale.
+    Regenerates otherwise (via llm_call).
     """
-    interests_dir = Path(config.INTERESTS_DIR)
+    interests_path = Path(interests_dir)
     real_files = []
-    if interests_dir.exists():
-        real_files = [f for f in interests_dir.iterdir()
+    if interests_path.exists():
+        real_files = [f for f in interests_path.iterdir()
                       if f.is_file() and not f.name.startswith(".")]
-    cache = _load_cache()
+    cache = _load_cache(cache_file)
 
     # No local papers to profile from — e.g. a headless / cloud run where the
     # interests/ PDFs are gitignored and therefore absent. Fall back to a
@@ -135,18 +132,18 @@ def get_profile() -> str:
             return cache["profile"]
         return "(No papers found in interests/ folder — using topic-only relevance scoring.)"
 
-    current_hash = _folder_hash(interests_dir)
+    current_hash = _folder_hash(interests_path)
 
-    if cache and _cache_is_fresh(cache, current_hash):
+    if cache and _cache_is_fresh(cache, current_hash, max_age_days):
         print("  [profile] Using cached relevance profile.")
         return cache["profile"]
 
     # Regenerate
-    texts = _collect_texts(interests_dir)
+    texts = _collect_texts(interests_path)
     if not texts:
         return "(Could not extract text from any file in interests/ folder.)"
 
-    profile = _generate_profile(texts)
-    _save_cache(profile, current_hash)
+    profile_text = _generate_profile(texts, llm_call)
+    _save_cache(cache_file, profile_text, current_hash)
     print("  [profile] Profile saved to cache.")
-    return profile
+    return profile_text

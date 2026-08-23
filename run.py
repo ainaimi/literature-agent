@@ -20,6 +20,7 @@ import search
 import score
 import digest
 import send
+import llm
 from models import PlatformCredentials, UserSettings
 
 
@@ -43,9 +44,15 @@ def main():
     print("Literature Agent")
     print("=" * 60)
 
+    llm_call = llm.make_llm_call(settings, creds)
+
     # Step 1: Load relevance profile
     print("\n[1/4] Loading researcher profile...")
-    researcher_profile = profiles.get_profile()
+    researcher_profile = profiles.get_profile(
+        interests_dir=settings.interests_dir,
+        cache_file=settings.profile_cache_file,
+        max_age_days=settings.profile_max_age_days,
+        llm_call=llm_call)
     print(f"  Profile: {researcher_profile[:120]}...")
 
     # Step 2: Search all databases
