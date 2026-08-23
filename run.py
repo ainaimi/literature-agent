@@ -56,9 +56,9 @@ def main():
     print(f"  Profile: {researcher_profile[:120]}...")
 
     # Step 2: Search all databases
-    print(f"\n[2/4] Searching {len(config.DATABASES)} databases "
-          f"(last {config.LOOKBACK_DAYS} days)...")
-    papers = search.fetch_all_papers()
+    print(f"\n[2/4] Searching {len(settings.databases)} databases "
+          f"(last {settings.lookback_days} days)...")
+    papers = search.fetch_all_papers(settings, creds)
 
     if not papers:
         print("No papers found. Exiting.")

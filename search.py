@@ -1,15 +1,9 @@
 # search.py — queries PubMed, arXiv, medRxiv, and Semantic Scholar
 
-import os
 import re
 import time
 import requests
 from datetime import datetime, timedelta, timezone
-from dotenv import load_dotenv
-
-import config
-
-load_dotenv(os.path.expanduser("~/.env"))
 
 # Shared paper schema:
 # {
@@ -20,36 +14,33 @@ load_dotenv(os.path.expanduser("~/.env"))
 #   "date":     str | None,   # ISO 8601 if available
 #   "source":   str,          # "pubmed" | "arxiv" | "medrxiv" | "semantic_scholar"
 #   "url":      str,
-#   "cluster":  str | None,   # which SEARCH_CLUSTER triggered this result
+#   "cluster":  str | None,   # which search cluster triggered this result
 # }
 
 
-def _cutoff_date() -> str:
-    d = datetime.now(timezone.utc) - timedelta(days=config.LOOKBACK_DAYS)
+def _cutoff_date(lookback_days: int) -> str:
+    d = datetime.now(timezone.utc) - timedelta(days=lookback_days)
     return d.strftime("%Y/%m/%d")
 
 
-def _cutoff_iso() -> str:
-    d = datetime.now(timezone.utc) - timedelta(days=config.LOOKBACK_DAYS)
+def _cutoff_iso(lookback_days: int) -> str:
+    d = datetime.now(timezone.utc) - timedelta(days=lookback_days)
     return d.strftime("%Y-%m-%d")
 
 
-def _cluster_uses(cluster_name: str, db: str) -> bool:
+def _cluster_uses(cluster_name: str, db: str, *,
+                  cluster_databases: dict, databases: list) -> bool:
     """Check whether a cluster should query a given database."""
-    overrides = getattr(config, "CLUSTER_DATABASES", {})
-    if cluster_name in overrides:
-        return db in overrides[cluster_name]
-    return db in config.DATABASES
+    if cluster_name in cluster_databases:
+        return db in cluster_databases[cluster_name]
+    return db in databases
 
 
 # ─── PubMed ──────────────────────────────────────────────────────────────────
 
-def _ncbi_api_key() -> str:
-    return os.environ.get("NCBI_API_KEY", "")
-
-
-def _search_pubmed_query(query: str, limit: int) -> list[dict]:
-    cutoff = _cutoff_date()
+def _search_pubmed_query(query: str, limit: int, *, lookback_days: int,
+                         api_key: str) -> list[dict]:
+    cutoff = _cutoff_date(lookback_days)
     base = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils"
 
     search_params = {
@@ -63,7 +54,6 @@ def _search_pubmed_query(query: str, limit: int) -> list[dict]:
         "retmode": "json",
         "sort": "date",
     }
-    api_key = _ncbi_api_key()
     if api_key:
         search_params["api_key"] = api_key
 
@@ -137,13 +127,17 @@ def _parse_pubmed_xml(xml_text: str) -> list[dict]:
     return papers
 
 
-def search_pubmed(clusters: dict[str, list[str]], limit: int) -> list[dict]:
+def search_pubmed(settings, *, api_key: str) -> list[dict]:
     results = []
-    for cluster_name, queries in clusters.items():
-        if not _cluster_uses(cluster_name, "pubmed"):
+    for cluster_name, queries in settings.search_clusters.items():
+        if not _cluster_uses(cluster_name, "pubmed",
+                             cluster_databases=settings.cluster_databases,
+                             databases=settings.databases):
             continue
         for query in queries:
-            papers = _search_pubmed_query(query, limit)
+            papers = _search_pubmed_query(query, settings.fetch_limit_per_query,
+                                          lookback_days=settings.lookback_days,
+                                          api_key=api_key)
             for p in papers:
                 p["cluster"] = cluster_name
             results.extend(papers)
@@ -151,8 +145,10 @@ def search_pubmed(clusters: dict[str, list[str]], limit: int) -> list[dict]:
     return results
 
 
-def search_pubmed_author(pubmed_query: str, limit: int) -> list[dict]:
-    papers = _search_pubmed_query(f"{pubmed_query}[Author]", limit)
+def search_pubmed_author(pubmed_query: str, limit: int, *, lookback_days: int,
+                         api_key: str) -> list[dict]:
+    papers = _search_pubmed_query(f"{pubmed_query}[Author]", limit,
+                                  lookback_days=lookback_days, api_key=api_key)
     for p in papers:
         p["cluster"] = "followed_author"
     return papers
@@ -160,19 +156,21 @@ def search_pubmed_author(pubmed_query: str, limit: int) -> list[dict]:
 
 # ─── arXiv ───────────────────────────────────────────────────────────────────
 
-def search_arxiv(clusters: dict[str, list[str]], limit: int) -> list[dict]:
+def search_arxiv(settings) -> list[dict]:
     import xml.etree.ElementTree as ET
-    cutoff = datetime.now(timezone.utc) - timedelta(days=config.LOOKBACK_DAYS)
+    cutoff = datetime.now(timezone.utc) - timedelta(days=settings.lookback_days)
     base = "http://export.arxiv.org/api/query"
     ns = {"atom": "http://www.w3.org/2005/Atom"}
     results = []
 
     # Build category filter string: "(cat:stat.ME OR cat:stat.AP OR ...)"
-    categories = getattr(config, "ARXIV_CATEGORIES", [])
+    categories = settings.arxiv_categories
     cat_filter = " OR ".join(f"cat:{c}" for c in categories) if categories else ""
 
-    for cluster_name, queries in clusters.items():
-        if not _cluster_uses(cluster_name, "arxiv"):
+    for cluster_name, queries in settings.search_clusters.items():
+        if not _cluster_uses(cluster_name, "arxiv",
+                             cluster_databases=settings.cluster_databases,
+                             databases=settings.databases):
             continue
         for query in queries:
             search_q = f"all:{query}"
@@ -182,7 +180,7 @@ def search_arxiv(clusters: dict[str, list[str]], limit: int) -> list[dict]:
             params = {
                 "search_query": search_q,
                 "start": 0,
-                "max_results": limit,
+                "max_results": settings.fetch_limit_per_query,
                 "sortBy": "submittedDate",
                 "sortOrder": "descending",
             }
@@ -241,8 +239,8 @@ def search_arxiv(clusters: dict[str, list[str]], limit: int) -> list[dict]:
 
 # ─── medRxiv ─────────────────────────────────────────────────────────────────
 
-def search_medrxiv(clusters: dict[str, list[str]], limit: int) -> list[dict]:
-    cutoff = _cutoff_iso()
+def search_medrxiv(settings) -> list[dict]:
+    cutoff = _cutoff_iso(settings.lookback_days)
     today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
     base = "https://api.biorxiv.org/details/medrxiv"
     results = []
@@ -250,8 +248,10 @@ def search_medrxiv(clusters: dict[str, list[str]], limit: int) -> list[dict]:
     # Build keyword sets only for clusters that should use medRxiv
     all_keywords = {
         cluster: [q.lower() for q in queries]
-        for cluster, queries in clusters.items()
-        if _cluster_uses(cluster, "medrxiv")
+        for cluster, queries in settings.search_clusters.items()
+        if _cluster_uses(cluster, "medrxiv",
+                         cluster_databases=settings.cluster_databases,
+                         databases=settings.databases)
     }
     if not all_keywords:
         return []
@@ -288,22 +288,19 @@ def search_medrxiv(clusters: dict[str, list[str]], limit: int) -> list[dict]:
                 "cluster": matched_cluster,
             })
 
-    return results[:limit * len(all_keywords)]
+    return results[:settings.fetch_limit_per_query * len(all_keywords)]
 
 
 # ─── Semantic Scholar ────────────────────────────────────────────────────────
 
-def _s2_headers() -> dict:
-    key = (
-        getattr(config, "SEMANTIC_SCHOLAR_API_KEY", "")
-        or os.environ.get("SEMANTIC_SCHOLAR_API_KEY", "")
-    )
-    return {"x-api-key": key} if key else {}
+def _s2_headers(api_key: str) -> dict:
+    return {"x-api-key": api_key} if api_key else {}
 
 
-def _s2_request(url: str, params: dict, retries: int = 3) -> dict | None:
+def _s2_request(url: str, params: dict, *, api_key: str,
+                retries: int = 3) -> dict | None:
     """GET with exponential backoff on 429."""
-    headers = _s2_headers()
+    headers = _s2_headers(api_key)
     delay = 2.0
     for attempt in range(retries):
         try:
@@ -355,21 +352,23 @@ def _s2_paper_to_dict(paper: dict, cluster: str) -> dict | None:
     }
 
 
-def _search_s2_query(query: str, limit: int) -> list[dict]:
+def _search_s2_query(query: str, limit: int, *, lookback_days: int,
+                     api_key: str) -> list[dict]:
     params = {
         "query": query,
         "limit": limit,
         "fields": "title,abstract,authors,year,publicationDate,externalIds,url",
-        "publicationDateOrYear": f"{_cutoff_iso()}:",
+        "publicationDateOrYear": f"{_cutoff_iso(lookback_days)}:",
     }
     data = _s2_request(
-        "https://api.semanticscholar.org/graph/v1/paper/search", params
+        "https://api.semanticscholar.org/graph/v1/paper/search", params,
+        api_key=api_key,
     )
     return (data or {}).get("data", [])
 
 
-def search_semantic_scholar(clusters: dict[str, list[str]], limit: int) -> list[dict]:
-    if not _s2_headers():
+def search_semantic_scholar(settings, *, api_key: str) -> list[dict]:
+    if not api_key:
         print("  [s2] No API key found — skipping Semantic Scholar.")
         print("       Get a free key at semanticscholar.org/product/api")
         print("       Then add SEMANTIC_SCHOLAR_API_KEY=... to ~/.env")
@@ -378,11 +377,15 @@ def search_semantic_scholar(clusters: dict[str, list[str]], limit: int) -> list[
     results = []
     delay = 1.5  # with API key: 100 req/5min = 1 req/3s; 1.5s is safe
 
-    for cluster_name, queries in clusters.items():
-        if not _cluster_uses(cluster_name, "semantic_scholar"):
+    for cluster_name, queries in settings.search_clusters.items():
+        if not _cluster_uses(cluster_name, "semantic_scholar",
+                             cluster_databases=settings.cluster_databases,
+                             databases=settings.databases):
             continue
         for query in queries:
-            papers = _search_s2_query(query, limit)
+            papers = _search_s2_query(query, settings.fetch_limit_per_query,
+                                      lookback_days=settings.lookback_days,
+                                      api_key=api_key)
             for p in papers:
                 d = _s2_paper_to_dict(p, cluster_name)
                 if d:
@@ -392,8 +395,9 @@ def search_semantic_scholar(clusters: dict[str, list[str]], limit: int) -> list[
     return results
 
 
-def search_s2_author(s2_author_id: str, limit: int) -> list[dict]:
-    cutoff = _cutoff_iso()
+def search_s2_author(s2_author_id: str, limit: int, *, lookback_days: int,
+                     api_key: str) -> list[dict]:
+    cutoff = _cutoff_iso(lookback_days)
     params = {
         "limit": limit,
         "fields": "title,abstract,authors,year,publicationDate,externalIds,url",
@@ -401,6 +405,7 @@ def search_s2_author(s2_author_id: str, limit: int) -> list[dict]:
     data = _s2_request(
         f"https://api.semanticscholar.org/graph/v1/author/{s2_author_id}/papers",
         params,
+        api_key=api_key,
     )
     if not data:
         return []
@@ -418,13 +423,14 @@ def search_s2_author(s2_author_id: str, limit: int) -> list[dict]:
 
 # ─── Keyword pre-filtering ───────────────────────────────────────────────────
 
-def apply_keyword_filters(papers: list[dict]) -> list[dict]:
+def apply_keyword_filters(papers: list[dict], *, exclude_keywords: list,
+                          require_keywords: list) -> list[dict]:
     """
-    Drop papers that match EXCLUDE_KEYWORDS or fail REQUIRE_KEYWORDS.
+    Drop papers that match exclude_keywords or fail require_keywords.
     Matching is case-insensitive against the paper title.
     """
-    excludes = [k.lower() for k in getattr(config, "EXCLUDE_KEYWORDS", [])]
-    requires = [k.lower() for k in getattr(config, "REQUIRE_KEYWORDS", [])]
+    excludes = [k.lower() for k in exclude_keywords]
+    requires = [k.lower() for k in require_keywords]
 
     kept, dropped = [], 0
     for p in papers:
@@ -461,42 +467,48 @@ def deduplicate(papers: list[dict]) -> list[dict]:
 
 # ─── Main entry point ────────────────────────────────────────────────────────
 
-def fetch_all_papers() -> list[dict]:
-    clusters = config.SEARCH_CLUSTERS
-    limit = config.FETCH_LIMIT_PER_QUERY
-    databases = config.DATABASES
+def fetch_all_papers(settings, credentials) -> list[dict]:
+    databases = settings.databases
+    limit = settings.fetch_limit_per_query
     all_papers = []
 
     if "pubmed" in databases:
         print("[search] Querying PubMed...")
-        all_papers.extend(search_pubmed(clusters, limit))
+        all_papers.extend(search_pubmed(settings, api_key=credentials.ncbi_api_key))
 
     if "arxiv" in databases:
         print("[search] Querying arXiv...")
-        all_papers.extend(search_arxiv(clusters, limit))
+        all_papers.extend(search_arxiv(settings))
 
     if "medrxiv" in databases:
         print("[search] Querying medRxiv...")
-        all_papers.extend(search_medrxiv(clusters, limit))
+        all_papers.extend(search_medrxiv(settings))
 
     if "semantic_scholar" in databases:
         print("[search] Querying Semantic Scholar...")
-        all_papers.extend(search_semantic_scholar(clusters, limit))
+        all_papers.extend(search_semantic_scholar(settings,
+                                                  api_key=credentials.s2_api_key))
 
-    for author in config.FOLLOWED_AUTHORS:
+    for author in settings.followed_authors:
         name = author.get("name", "unknown")
         s2_id = author.get("s2_author_id")
         pm_query = author.get("pubmed_query")
 
         if s2_id and "semantic_scholar" in databases:
             print(f"[search] Fetching papers by {name} (Semantic Scholar)...")
-            all_papers.extend(search_s2_author(s2_id, limit))
+            all_papers.extend(search_s2_author(s2_id, limit,
+                                               lookback_days=settings.lookback_days,
+                                               api_key=credentials.s2_api_key))
 
         if pm_query and "pubmed" in databases:
             print(f"[search] Fetching papers by {name} (PubMed)...")
-            all_papers.extend(search_pubmed_author(pm_query, limit))
+            all_papers.extend(search_pubmed_author(pm_query, limit,
+                                                   lookback_days=settings.lookback_days,
+                                                   api_key=credentials.ncbi_api_key))
 
     deduped = deduplicate(all_papers)
     print(f"[search] {len(all_papers)} total → {len(deduped)} after deduplication")
-    filtered = apply_keyword_filters(deduped)
+    filtered = apply_keyword_filters(deduped,
+                                     exclude_keywords=settings.exclude_keywords,
+                                     require_keywords=settings.require_keywords)
     return filtered
