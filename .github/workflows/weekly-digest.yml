@@ -47,3 +47,17 @@ jobs:
 
       - name: Search, score, and email the digest
         run: uv run python run.py
+
+      - name: Upload scored run data
+        # The runner's filesystem is discarded when the job ends, so keep each
+        # run's scored set as a workflow artifact (downloadable from the run's
+        # page in the Actions tab, or `gh run download`).
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: scored-run
+          path: |
+            _runs/*.json
+            _last_run.json
+          if-no-files-found: ignore
+          retention-days: 90
