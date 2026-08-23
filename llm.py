@@ -87,18 +87,3 @@ def _call_ollama(prompt: str, system: str, *, model: str, timeout: float) -> str
                          timeout=timeout)
     resp.raise_for_status()
     return resp.json()["response"]
-
-
-# ─── TEMPORARY back-compat shim ──────────────────────────────────────────────
-# Old zero-config entry point, still used by profiles.py and score.py until
-# their migrations land. Deleted once no callers remain.
-
-def call_llm(prompt: str, system: str = "") -> str:
-    import os
-
-    import config
-    return call(prompt, system,
-                provider=config.LLM_PROVIDER,
-                model=config.LLM_MODEL,
-                anthropic_api_key=os.environ.get("ANTHROPIC_API_KEY", ""),
-                openai_api_key=os.environ.get("OPENAI_API_KEY", ""))

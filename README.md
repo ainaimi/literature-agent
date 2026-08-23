@@ -231,6 +231,29 @@ instead of `cron`.
 
 ---
 
+## Running from a settings file (multi-user core)
+
+The pipeline is decoupled from `config.py`: all per-user settings can live in a
+JSON file instead, which is how the future multi-user service will drive it
+(one settings record per user). Credentials always come from the environment.
+
+```bash
+# Export the current config.py as JSON — a starting point for a tenant file:
+uv run python run.py --print-settings > me.json
+
+# Run any settings file (edit clusters, threshold, email_to, data_dir...):
+uv run python run.py --settings me.json --dry-run
+```
+
+Setting `"data_dir"` in the JSON scopes that tenant's artifacts
+(`_last_run.json`, `_runs/`, the dry-run preview) to that directory; the
+interests folder and profile cache default to living under it too. Tip: when
+cloning a tenant from an existing setup, copy its `_profile_cache.json` into
+the tenant's cache path — otherwise the first run pays one LLM call to
+regenerate the profile.
+
+---
+
 ## Cost
 
 With Claude Haiku (the default): roughly **$0.50–0.90 per weekly run**, depending
@@ -245,7 +268,7 @@ tier). Local Ollama is free but slower and lower quality.
 
 | Symptom | Likely cause / fix |
 |---------|--------------------|
-| `KeyError: 'SMTP_USERNAME'` (or similar) | That key is missing from `~/.env` (local) or from GitHub Secrets (cloud). |
+| `ValueError: SMTP_USERNAME / SMTP_PASSWORD not set` (or similar) | That key is missing from `~/.env` (local) or from GitHub Secrets (cloud). |
 | Email never arrives | Using your Gmail password instead of an **App Password**; or 2-Step Verification isn't enabled on the account. |
 | Scoring feels generic in the cloud | You didn't upload `PROFILE_CACHE_B64` (step A3), so it's using topic-only scoring. |
 | "No papers found" | `LOOKBACK_DAYS` too small, or `REQUIRE_KEYWORDS` too aggressive. |
@@ -259,13 +282,16 @@ tier). Local Ollama is free but slower and lower quality.
 | File | Role |
 |------|------|
 | `config.py` | All user settings — the file you edit |
-| `run.py` | Entry point (`--dry-run`, `--search-only`, or full run) |
+| `run.py` | CLI entry point (`--dry-run`, `--search-only`, `--settings`, `--print-settings`) |
+| `models.py` | `UserSettings` / `PlatformCredentials` / `RunResult` data contracts |
+| `pipeline.py` | `run_for_user(settings, credentials)` — the full pipeline for one user |
 | `search.py` | Queries PubMed / arXiv / medRxiv / Semantic Scholar, deduplicates |
 | `score.py` | Concurrent LLM scoring via `ThreadPoolExecutor` |
 | `digest.py` | Formats the plain-text and HTML digest |
 | `send.py` | SMTP email delivery |
 | `profiles.py` | Builds the researcher profile from `interests/`; cached in `_profile_cache.json` |
 | `llm.py` | Provider-agnostic wrapper (Anthropic / OpenAI / Ollama) |
+| `tests/` | Unit tests (`uv run pytest`) — no network or LLM calls |
 | `interests/` | Drop your papers here (gitignored — personal to each user) |
 | `_last_run.json` / `_runs/` | Structured record of each run's full scored set (gitignored); re-render a digest without re-scoring |
 | `.github/workflows/weekly-digest.yml` | The GitHub Actions schedule (Option A) |

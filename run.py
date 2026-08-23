@@ -11,6 +11,7 @@
 # config.py (the single-user tuning file).
 
 import argparse
+import json
 import os
 import sys
 
@@ -27,15 +28,35 @@ def main() -> int:
                         help="Run everything but don't send the email")
     parser.add_argument("--search-only", action="store_true",
                         help="Search databases only, print titles, skip LLM and email")
+    parser.add_argument("--settings", metavar="PATH",
+                        help="Run from a JSON settings file (a tenant) instead "
+                             "of config.py; credentials still come from the "
+                             "environment")
+    parser.add_argument("--print-settings", action="store_true",
+                        help="Print the config.py-derived settings as JSON "
+                             "(a starting point for a --settings file) and exit")
     args = parser.parse_args()
 
     # The single place environment loading happens. Keep the explicit ~/.env
     # path — bare load_dotenv() would search the CWD instead. On CI there is
     # no ~/.env and secrets arrive as real env vars (dotenv never overrides).
     load_dotenv(os.path.expanduser("~/.env"))
-    settings = UserSettings.from_config_module(config)
-    creds = PlatformCredentials.from_env(
-        s2_key_override=getattr(config, "SEMANTIC_SCHOLAR_API_KEY", ""))
+
+    if args.print_settings:
+        settings = UserSettings.from_config_module(config)
+        print(json.dumps(settings.to_dict(), indent=2, ensure_ascii=False))
+        return 0
+
+    if args.settings:
+        with open(args.settings, encoding="utf-8") as f:
+            settings = UserSettings.from_dict(json.load(f))
+        creds = PlatformCredentials.from_env()
+    else:
+        settings = UserSettings.from_config_module(config)
+        # Historical quirk, preserved: a non-empty key pasted into config.py
+        # beats the environment variable. Applies only to the config.py path.
+        creds = PlatformCredentials.from_env(
+            s2_key_override=getattr(config, "SEMANTIC_SCHOLAR_API_KEY", ""))
 
     pipeline.run_for_user(settings, creds,
                           dry_run=args.dry_run, search_only=args.search_only)
