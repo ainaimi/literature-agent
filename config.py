@@ -175,6 +175,17 @@ FETCH_LIMIT_PER_QUERY = 8  # papers fetched per query before LLM scoring
 RELEVANCE_THRESHOLD  = 6   # 0–10: papers scoring below this are dropped
 TOP_N_PAPERS         = 20  # number of papers in the final weekly digest
 
+# ─── History (no repeats) ────────────────────────────────────────────────────
+# Databases re-return old papers for weeks when publication dates are vague
+# (a year-only PubMed date matches every weekly window in that year). The agent
+# therefore records every paper listed in a sent digest — email or attachment —
+# in _seen.json and skips those papers in later runs, before LLM scoring.
+# To let one paper reappear, delete its entry from _seen.json; to reset
+# completely, delete the file. One-off repeat run: `python run.py --include-seen`.
+
+SKIP_SEEN_PAPERS    = True  # False disables the cross-run history entirely
+SEEN_RETENTION_DAYS = 730   # forget papers after ~2 years (0 = remember forever)
+
 # ─── Interests Folder ────────────────────────────────────────────────────────
 # Drop PDFs, Word docs (.docx), LaTeX (.tex), or plain text (.txt / .md)
 # into this folder. The agent reads them to build your relevance profile.

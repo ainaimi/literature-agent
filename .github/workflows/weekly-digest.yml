@@ -16,6 +16,8 @@ jobs:
   digest:
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    permissions:
+      contents: write   # to commit the updated _seen.json history back
     env:
       # All values come from encrypted repository secrets — see the README.
       ANTHROPIC_API_KEY:        ${{ secrets.ANTHROPIC_API_KEY }}
@@ -47,6 +49,22 @@ jobs:
 
       - name: Search, score, and email the digest
         run: uv run python run.py
+
+      - name: Persist the seen-papers history
+        # _seen.json is how next week's run knows which papers were already
+        # listed. The runner's filesystem is discarded when the job ends, so
+        # commit the updated file back to the repository.
+        run: |
+          if git status --porcelain _seen.json | grep -q .; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add _seen.json
+            git commit -m "history: papers listed in the $(date -u +%Y-%m-%d) digest"
+            git pull --rebase origin main
+            git push origin main
+          else
+            echo "No change to _seen.json — nothing to commit."
+          fi
 
       - name: Upload scored run data
         # The runner's filesystem is discarded when the job ends, so keep each

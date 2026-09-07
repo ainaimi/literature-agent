@@ -34,6 +34,8 @@ CONFIG_FIELD_MAP = {
     "FETCH_LIMIT_PER_QUERY": "fetch_limit_per_query",
     "RELEVANCE_THRESHOLD":   "relevance_threshold",
     "TOP_N_PAPERS":          "top_n_papers",
+    "SKIP_SEEN_PAPERS":      "skip_seen_papers",
+    "SEEN_RETENTION_DAYS":   "seen_retention_days",
     "PERSONA":               "persona",        # optional in config.py
     "EXAMPLE_NAME":          "example_name",   # optional in config.py
     "INTERESTS_DIR":         "interests_dir",
@@ -69,6 +71,9 @@ class UserSettings:
     fetch_limit_per_query: int = 8
     relevance_threshold: int = 6
     top_n_papers: int = 20
+    # cross-run history (see history.py)
+    skip_seen_papers: bool = True
+    seen_retention_days: int = 730
     # scoring voice
     persona: str = DEFAULT_PERSONA
     example_name: str = "Naimi"
@@ -141,6 +146,10 @@ class UserSettings:
         return os.path.normpath(os.path.join(self.data_dir,
                                              "_full-scored-list-preview.html"))
 
+    @property
+    def seen_path(self) -> str:
+        return os.path.normpath(os.path.join(self.data_dir, "_seen.json"))
+
 
 @dataclass(frozen=True)
 class PlatformCredentials:
@@ -186,6 +195,7 @@ class RunResult:
     status: str
     run_date: str = ""
     total_searched: int = 0
+    skipped_seen: int = 0   # dropped because a past digest already listed them
     passed_count: int = 0
     top_papers: list = field(default_factory=list)
     all_scored: list = field(default_factory=list)

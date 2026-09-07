@@ -5,6 +5,7 @@
 #   uv run python run.py            # full run: search → score → send
 #   uv run python run.py --dry-run  # search and score, print digest, don't send
 #   uv run python run.py --search-only  # search only, print titles, no LLM calls
+#   uv run python run.py --include-seen # also list papers from past digests
 #
 # The pipeline itself lives in pipeline.run_for_user(); this file only parses
 # arguments, loads the environment, and assembles settings + credentials from
@@ -28,6 +29,9 @@ def main() -> int:
                         help="Run everything but don't send the email")
     parser.add_argument("--search-only", action="store_true",
                         help="Search databases only, print titles, skip LLM and email")
+    parser.add_argument("--include-seen", action="store_true",
+                        help="Also list papers that already appeared in past "
+                             "digests (skipped by default)")
     parser.add_argument("--settings", metavar="PATH",
                         help="Run from a JSON settings file (a tenant) instead "
                              "of config.py; credentials still come from the "
@@ -59,7 +63,8 @@ def main() -> int:
             s2_key_override=getattr(config, "SEMANTIC_SCHOLAR_API_KEY", ""))
 
     pipeline.run_for_user(settings, creds,
-                          dry_run=args.dry_run, search_only=args.search_only)
+                          dry_run=args.dry_run, search_only=args.search_only,
+                          include_seen=args.include_seen)
     # Every outcome (including empty search weeks) is a successful run —
     # the Sunday CI job must not report failure on a quiet week.
     return 0

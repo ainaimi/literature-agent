@@ -41,10 +41,14 @@ can also be run locally on demand.
    list of *followed authors* whose new work always comes through.
 2. **Pre-filter** results by keyword to drop obvious noise — fast and free, before
    any LLM is involved.
-3. **Score** each remaining paper from 0–10 against a *researcher profile* the
+3. **Skip repeats.** Every paper listed in a sent digest is recorded in
+   `_seen.json`; later runs drop those papers before scoring. (Databases
+   re-return old papers for weeks when publication dates are vague — a
+   year-only PubMed date matches every weekly window in that year.)
+4. **Score** each remaining paper from 0–10 against a *researcher profile* the
    agent builds automatically from whatever PDFs / Word / LaTeX files you drop
    into `interests/`.
-4. **Email** you the top *N* papers (you define *N*), formatted as an HTML digest,
+5. **Email** you the top *N* papers (you define *N*), formatted as an HTML digest,
    with the complete list of every paper that passed the threshold attached as an
    HTML file.
 
@@ -142,7 +146,11 @@ Always dry-run before scheduling:
 uv run python run.py --search-only   # just print what the searches return — no LLM, no email
 uv run python run.py --dry-run       # full search + scoring, prints the digest, sends nothing
 uv run python run.py                 # the real thing: search → score → email
+uv run python run.py --include-seen  # one-off: also list papers from past digests
 ```
+
+Only a *sent* digest records papers into `_seen.json` — dry runs never hide
+papers from the real Sunday send.
 
 Once `--dry-run` looks right and one real run lands in your inbox, you're ready to
 automate.
@@ -166,8 +174,9 @@ gh repo create literature-agent --public --source . --remote origin --push
 ```
 
 > Public vs. private is up to you. Your `config.py` (topics + followed authors)
-> becomes visible in a public repo — fine for most people, since research
-> interests aren't secret — but **never commit secrets**; those only ever live in
+> and `_seen.json` (titles/links of papers your digests already listed) become
+> visible in a public repo — fine for most people, since research interests
+> aren't secret — but **never commit secrets**; those only ever live in
 > `~/.env` locally and in GitHub Secrets (below). One caveat: GitHub
 > **auto-disables scheduled workflows in a public repo after 60 days with no new
 > commits** — GitHub emails you first, and one click re-enables it. A private repo
@@ -202,6 +211,13 @@ gh run watch                          # follow the live logs
 ```
 
 That's it — from now on `.github/workflows/weekly-digest.yml` runs every Sunday.
+
+After each sent digest, the workflow **commits the updated `_seen.json` back to
+the repository** — the runner's filesystem is discarded, so this is how next
+week's cloud run knows which papers were already listed. If you also run
+locally, `git pull` before — and `git push` after — a real (non-dry) local run
+so both sides share one history. A nice side effect: the weekly commit resets GitHub's 60-day
+idle timer, so the schedule no longer gets auto-disabled in a public repo.
 
 **Changing the send time.** The workflow's cron is `17 12 * * 0` (Sundays, 12:17
 UTC). GitHub cron is **always UTC and ignores daylight saving**, so in US Eastern
@@ -246,7 +262,7 @@ uv run python run.py --settings me.json --dry-run
 ```
 
 Setting `"data_dir"` in the JSON scopes that tenant's artifacts
-(`_last_run.json`, `_runs/`, the dry-run preview) to that directory; the
+(`_last_run.json`, `_runs/`, `_seen.json`, the dry-run preview) to that directory; the
 interests folder and profile cache default to living under it too. Tip: when
 cloning a tenant from an existing setup, copy its `_profile_cache.json` into
 the tenant's cache path — otherwise the first run pays one LLM call to
@@ -272,6 +288,9 @@ tier). Local Ollama is free but slower and lower quality.
 | Email never arrives | Using your Gmail password instead of an **App Password**; or 2-Step Verification isn't enabled on the account. |
 | Scoring feels generic in the cloud | You didn't upload `PROFILE_CACHE_B64` (step A3), so it's using topic-only scoring. |
 | "No papers found" | `LOOKBACK_DAYS` too small, or `REQUIRE_KEYWORDS` too aggressive. |
+| "No new papers found" | Everything the searches returned was already listed in a past digest — a quiet week, not an error. |
+| A paper you expected never appears | It was probably listed in an earlier digest (check `_seen.json`). Delete its entry to let it back in, or run `--include-seen` once. Delete the whole file to reset the history. |
+| Same paper in several weekly digests | Should no longer happen — that's what `_seen.json` prevents (`SKIP_SEEN_PAPERS` in `config.py`). If it recurs, check that the workflow's "Persist the seen-papers history" step is pushing successfully. |
 | Weekly runs stopped (public repo) | GitHub disabled the schedule after 60 days idle — re-enable it from the repo's **Actions** tab, or push any commit. |
 | Digest arrives an hour off twice a year | Expected — GitHub cron is UTC and doesn't shift for daylight saving. |
 
@@ -286,6 +305,7 @@ tier). Local Ollama is free but slower and lower quality.
 | `models.py` | `UserSettings` / `PlatformCredentials` / `RunResult` data contracts |
 | `pipeline.py` | `run_for_user(settings, credentials)` — the full pipeline for one user |
 | `search.py` | Queries PubMed / arXiv / medRxiv / Semantic Scholar, deduplicates |
+| `history.py` | Cross-run memory of already-listed papers (`_seen.json`) |
 | `score.py` | Concurrent LLM scoring via `ThreadPoolExecutor` |
 | `digest.py` | Formats the plain-text and HTML digest |
 | `send.py` | SMTP email delivery |
@@ -294,5 +314,6 @@ tier). Local Ollama is free but slower and lower quality.
 | `tests/` | Unit tests (`uv run pytest`) — no network or LLM calls |
 | `interests/` | Drop your papers here (gitignored — personal to each user) |
 | `_last_run.json` / `_runs/` | Structured record of each run's full scored set (gitignored); re-render a digest without re-scoring |
+| `_seen.json` | Papers already listed in a sent digest — **committed**, so cloud runs remember week to week |
 | `.github/workflows/weekly-digest.yml` | The GitHub Actions schedule (Option A) |
 | `.env.example` | Template for your `~/.env` credentials file |

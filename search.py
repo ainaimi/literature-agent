@@ -1,9 +1,10 @@
 # search.py — queries PubMed, arXiv, medRxiv, and Semantic Scholar
 
-import re
 import time
 import requests
 from datetime import datetime, timedelta, timezone
+
+from history import normalize_title
 
 # Shared paper schema:
 # {
@@ -449,16 +450,14 @@ def apply_keyword_filters(papers: list[dict], *, exclude_keywords: list,
 
 
 # ─── Deduplication ───────────────────────────────────────────────────────────
-
-def _normalize_title(title: str) -> str:
-    return re.sub(r"[^a-z0-9]", "", title.lower())
-
+# Within-run duplicates only; the title identity itself lives in history.py so
+# cross-run history matches papers exactly the way this pass does.
 
 def deduplicate(papers: list[dict]) -> list[dict]:
     seen = set()
     unique = []
     for p in papers:
-        key = _normalize_title(p.get("title", ""))
+        key = normalize_title(p.get("title", ""))
         if key and key not in seen:
             seen.add(key)
             unique.append(p)

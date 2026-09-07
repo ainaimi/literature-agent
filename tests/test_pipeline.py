@@ -104,3 +104,71 @@ def test_run_for_user_sent_status_calls_send(tmp_path, monkeypatch):
     assert sent["to_addr"] == "reader@uni.edu"
     assert sent["subject"] == "Your Lit-Search Digest"
     assert sent["attachment"] == f"full-scored-list-{result.run_date}.html"
+
+
+# ─── Cross-run history (papers listed once are never listed again) ───────────
+
+PAPERS = [{"title": "T", "abstract": "A", "source": "pubmed",
+           "authors": "X", "year": 2026, "url": "u", "cluster": "c"}]
+SCORED_PAPERS = [dict(PAPERS[0], score=8, summary_bullets=[], read_bullets=[])]
+
+
+def _stub_stages(monkeypatch, send=lambda *a, **k: None):
+    monkeypatch.setattr(pipeline.search, "fetch_all_papers",
+                        lambda settings, creds: [dict(p) for p in PAPERS])
+    monkeypatch.setattr(pipeline.score, "score_all",
+                        lambda *a, **k: (list(SCORED_PAPERS), list(SCORED_PAPERS)))
+    monkeypatch.setattr(pipeline.send, "send_email", send)
+
+
+def test_sent_run_records_history_and_next_run_skips(tmp_path, monkeypatch):
+    _stub_stages(monkeypatch)
+    settings = _stub_settings(tmp_path)
+
+    first = pipeline.run_for_user(settings, PlatformCredentials(),
+                                  log=lambda *_: None)
+    assert first.status == "sent"
+    assert first.skipped_seen == 0
+    seen = json.loads((tmp_path / "_seen.json").read_text())
+    assert [e["title"] for e in seen["entries"].values()] == ["T"]
+
+    def no_score(*a, **k):
+        raise AssertionError("previously listed papers must not be re-scored")
+    monkeypatch.setattr(pipeline.score, "score_all", no_score)
+
+    second = pipeline.run_for_user(settings, PlatformCredentials(),
+                                   log=lambda *_: None)
+    assert second.status == "no_papers"
+    assert second.skipped_seen == 1
+
+
+def test_dry_run_does_not_record_history(tmp_path, monkeypatch):
+    _stub_stages(monkeypatch)
+    result = pipeline.run_for_user(_stub_settings(tmp_path),
+                                   PlatformCredentials(), dry_run=True,
+                                   log=lambda *_: None)
+    assert result.status == "dry_run"
+    assert not (tmp_path / "_seen.json").exists()
+
+
+def test_include_seen_lists_previously_recorded_papers(tmp_path, monkeypatch):
+    _stub_stages(monkeypatch)
+    settings = _stub_settings(tmp_path)
+    pipeline.run_for_user(settings, PlatformCredentials(), log=lambda *_: None)
+
+    again = pipeline.run_for_user(settings, PlatformCredentials(),
+                                  include_seen=True, log=lambda *_: None)
+    assert again.status == "sent"
+    assert again.skipped_seen == 0
+
+
+def test_skip_seen_papers_false_disables_history(tmp_path, monkeypatch):
+    _stub_stages(monkeypatch)
+    settings = UserSettings(data_dir=str(tmp_path),
+                            interests_dir=str(tmp_path / "no-interests"),
+                            profile_cache_file=str(tmp_path / "no-cache.json"),
+                            skip_seen_papers=False)
+    result = pipeline.run_for_user(settings, PlatformCredentials(),
+                                   log=lambda *_: None)
+    assert result.status == "sent"
+    assert not (tmp_path / "_seen.json").exists()

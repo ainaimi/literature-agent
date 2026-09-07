@@ -3,10 +3,12 @@
 from datetime import datetime
 
 
-def format_digest(papers: list[dict], total_searched: int = 0, passed_count: int = 0) -> str:
+def format_digest(papers: list[dict], total_searched: int = 0, passed_count: int = 0,
+                  *, skipped_seen: int = 0) -> str:
     """Plain-text digest for terminal output (dry-run)."""
     today = datetime.now().strftime("%B %d, %Y")
     stats = f"{total_searched} searched · {passed_count} relevant · {len(papers)} shown"
+    stats += _skipped_note(skipped_seen, sep=" · ")
     lines = [f"Weekly Literature Digest — {today}", stats, ""]
 
     for i, paper in enumerate(papers, 1):
@@ -127,29 +129,38 @@ def _html_page(heading: str, date: str, stats: str, body: str,
 
 def format_digest_html(papers: list[dict], total_searched: int = 0,
                        passed_count: int = 0, full_list_note: str = "", *,
-                       threshold: int = 6) -> str:
+                       threshold: int = 6, skipped_seen: int = 0) -> str:
     """HTML digest for email delivery — the top-N papers, with an optional note
     pointing at the attached full list."""
     today = datetime.now().strftime("%B %d, %Y")
     stats = (f"{total_searched} papers searched &nbsp;·&nbsp; "
              f"{passed_count} passed threshold (≥{threshold}/10) &nbsp;·&nbsp; "
-             f"top {len(papers)} shown")
+             f"top {len(papers)} shown"
+             + _skipped_note(skipped_seen, sep=" &nbsp;·&nbsp; "))
     body = "\n".join(_paper_block_html(i, p) for i, p in enumerate(papers, 1))
     return _html_page("Weekly Literature Digest", today, stats, body,
                       note=full_list_note)
 
 
 def format_full_list_html(papers: list[dict], total_searched: int = 0, *,
-                          threshold: int = 6) -> str:
+                          threshold: int = 6, skipped_seen: int = 0) -> str:
     """Standalone HTML page listing every paper that passed the threshold —
     attached to the email so the full set is available beyond the top-N digest."""
     today = datetime.now().strftime("%B %d, %Y")
     stats = (f"{total_searched} papers searched &nbsp;·&nbsp; "
              f"{len(papers)} passed threshold (≥{threshold}/10) &nbsp;·&nbsp; "
-             f"all {len(papers)} shown")
+             f"all {len(papers)} shown"
+             + _skipped_note(skipped_seen, sep=" &nbsp;·&nbsp; "))
     body = "\n".join(_paper_block_html(i, p) for i, p in enumerate(papers, 1))
     return _html_page("Full Scored List", today, stats, body,
                       title=f"Full Scored List — {today}")
+
+
+def _skipped_note(skipped_seen: int, *, sep: str) -> str:
+    """Stats-line suffix explaining papers withheld by the cross-run history."""
+    if not skipped_seen:
+        return ""
+    return f"{sep}{skipped_seen} already listed in past digests (skipped)"
 
 
 def _esc(text: str) -> str:

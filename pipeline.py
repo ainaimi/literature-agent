@@ -10,6 +10,7 @@ import os
 from datetime import datetime, timezone
 
 import digest
+import history
 import llm
 import profiles
 import score
@@ -20,12 +21,13 @@ from models import PlatformCredentials, RunResult, UserSettings
 
 def run_for_user(settings: UserSettings, credentials: PlatformCredentials, *,
                  dry_run: bool = False, search_only: bool = False,
-                 log=print) -> RunResult:
+                 include_seen: bool = False, log=print) -> RunResult:
     """Run the full profile → search → score → digest → send pipeline for one
     user. dry_run renders everything but writes a preview file instead of
     emailing; search_only stops after search (note: profile loading still runs
     first and may regenerate a stale cache via one LLM call, matching the
-    historical CLI behavior)."""
+    historical CLI behavior); include_seen also lists papers that already
+    appeared in a past digest, which are skipped by default."""
     log("=" * 60)
     log("Literature Agent")
     log("=" * 60)
@@ -48,9 +50,23 @@ def run_for_user(settings: UserSettings, credentials: PlatformCredentials, *,
 
     run_date = datetime.now().strftime("%Y-%m-%d")
 
+    # Drop papers already listed in a previously sent digest — the searches
+    # re-return them for weeks when publication dates are vague, so the memory
+    # lives here rather than in the per-database date filters.
+    hist = history.load(settings.seen_path) if settings.skip_seen_papers else None
+    skipped_seen = 0
+    if hist is not None and not include_seen:
+        papers, already_listed = history.filter_unseen(papers, hist)
+        skipped_seen = len(already_listed)
+        if skipped_seen:
+            log(f"  Skipping {skipped_seen} papers already listed in past "
+                f"digests → {len(papers)} new")
+
     if not papers:
-        log("No papers found. Exiting.")
+        log("No new papers found. Exiting." if skipped_seen
+            else "No papers found. Exiting.")
         return RunResult(status="no_papers", run_date=run_date,
+                         skipped_seen=skipped_seen,
                          profile_text=researcher_profile)
 
     if search_only:
@@ -59,6 +75,7 @@ def run_for_user(settings: UserSettings, credentials: PlatformCredentials, *,
             log(f"  {i:3}. [{p['source']}] {p['title'][:80]}")
         return RunResult(status="search_only", run_date=run_date,
                          total_searched=len(papers),
+                         skipped_seen=skipped_seen,
                          profile_text=researcher_profile)
 
     # Step 3: Score and summarize
@@ -76,6 +93,7 @@ def run_for_user(settings: UserSettings, credentials: PlatformCredentials, *,
         log("No papers passed the relevance threshold. Exiting.")
         return RunResult(status="no_passed", run_date=run_date,
                          total_searched=len(papers),
+                         skipped_seen=skipped_seen,
                          profile_text=researcher_profile)
 
     # Persist the full scored set as structured data. This decouples data from
@@ -87,12 +105,15 @@ def run_for_user(settings: UserSettings, credentials: PlatformCredentials, *,
     # Step 4: Format and send
     log(f"\n[4/4] Formatting digest (top {len(top_papers)} of {passed_count} that passed)...")
     note = f"Full scored list ({passed_count} papers) attached as an HTML file."
-    report         = digest.format_digest(top_papers, len(papers), passed_count)
+    report         = digest.format_digest(top_papers, len(papers), passed_count,
+                                          skipped_seen=skipped_seen)
     report_html    = digest.format_digest_html(top_papers, len(papers), passed_count,
                                                 full_list_note=note,
-                                                threshold=settings.relevance_threshold)
+                                                threshold=settings.relevance_threshold,
+                                                skipped_seen=skipped_seen)
     full_list_html = digest.format_full_list_html(all_scored, len(papers),
-                                                  threshold=settings.relevance_threshold)
+                                                  threshold=settings.relevance_threshold,
+                                                  skipped_seen=skipped_seen)
 
     log("\n" + "=" * 60)
     log(report)
@@ -103,6 +124,7 @@ def run_for_user(settings: UserSettings, credentials: PlatformCredentials, *,
     result = RunResult(status="dry_run" if dry_run else "sent",
                        run_date=run_date,
                        total_searched=len(papers),
+                       skipped_seen=skipped_seen,
                        passed_count=passed_count,
                        top_papers=top_papers,
                        all_scored=all_scored,
@@ -126,6 +148,14 @@ def run_for_user(settings: UserSettings, credentials: PlatformCredentials, *,
                         to_addr=settings.email_to, credentials=credentials,
                         attachment=(attachment_name, full_list_html))
         log("Sent.")
+        if hist is not None:
+            # Everything the user just received (digest + attachment) counts
+            # as listed. Only a delivered digest is recorded — dry runs must
+            # not hide papers from the real Sunday send.
+            added = history.record(hist, all_scored, run_date)
+            history.prune(hist, settings.seen_retention_days)
+            history.save(hist, settings.seen_path)
+            log(f"  History: {added} papers recorded → {settings.seen_path}")
 
     return result
 

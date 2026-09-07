@@ -60,6 +60,8 @@ def test_from_config_module_matches_live_config():
     assert s.fetch_limit_per_query == config.FETCH_LIMIT_PER_QUERY
     assert s.relevance_threshold == config.RELEVANCE_THRESHOLD
     assert s.top_n_papers == config.TOP_N_PAPERS
+    assert s.skip_seen_papers == config.SKIP_SEEN_PAPERS
+    assert s.seen_retention_days == config.SEEN_RETENTION_DAYS
     assert s.interests_dir == config.INTERESTS_DIR
     assert s.profile_cache_file == config.PROFILE_CACHE_FILE
     assert s.profile_max_age_days == config.PROFILE_MAX_AGE_DAYS
@@ -116,6 +118,7 @@ def test_default_data_dir_yields_legacy_artifact_paths():
     assert s.last_run_path == "_last_run.json"
     assert s.runs_dir == "_runs"
     assert s.preview_path == "_full-scored-list-preview.html"
+    assert s.seen_path == "_seen.json"
 
 
 def test_tenant_data_dir_scopes_artifact_paths():
@@ -123,6 +126,7 @@ def test_tenant_data_dir_scopes_artifact_paths():
     assert s.last_run_path == "tenants/bob/_last_run.json"
     assert s.runs_dir == "tenants/bob/_runs"
     assert s.preview_path == "tenants/bob/_full-scored-list-preview.html"
+    assert s.seen_path == "tenants/bob/_seen.json"
 
 
 # ─── PlatformCredentials ─────────────────────────────────────────────────────
