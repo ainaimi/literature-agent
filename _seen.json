@@ -1605,6 +1605,121 @@
       "title": "Comparison of live birth rates between calorie-restricted diet and metformin prior to ovulation induction therapy in women with polycystic ovary syndrome and overweight/obesity: a protocol for a multicenter, randomized comparative effectiveness trial",
       "url": "https://www.semanticscholar.org/paper/612aa5fa7b34bb747b35ec0b71e8c7d8dc576a14",
       "first_listed": "2026-09-13"
+    },
+    "covariateselectionfordoublyrobustdoubledebiasedmachinelearningestimatorsforcausalinference": {
+      "title": "Covariate Selection for Doubly Robust Double/debiased Machine Learning Estimators for Causal Inference",
+      "url": "https://www.semanticscholar.org/paper/a751a18dea7d2d50e57f49349660eb8e430b1437",
+      "first_listed": "2026-09-20"
+    },
+    "conditionalandmarginalhazardratiosaccountingforunmeasuredconfoundingininterpretationandestimation": {
+      "title": "Conditional and marginal hazard ratios: accounting for unmeasured confounding in interpretation and estimation.",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/42758956/",
+      "first_listed": "2026-09-20"
+    },
+    "beyondlinearitysemiparametricsolutionstocontaminationbiaswithmultivaluedtreatments": {
+      "title": "Beyond Linearity: Semiparametric Solutions to Contamination Bias with Multi-valued Treatments",
+      "url": "https://arxiv.org/abs/2609.20473v1",
+      "first_listed": "2026-09-20"
+    },
+    "causalinferencefromasingletreatedstateapeerreviewofleeetal2024andtheexchangethatfollowed": {
+      "title": "Causal inference from a single treated state: a peer review of Lee et al. (2024) and the exchange that followed",
+      "url": "https://www.semanticscholar.org/paper/79f504e54bee0bba9f2bf18f2849caa26ee0bfe7",
+      "first_listed": "2026-09-20"
+    },
+    "whenaigeneratescovariatescausaltypingandestimanddriftinsequentialexperiments": {
+      "title": "When AI Generates Covariates: Causal Typing and Estimand Drift in Sequential Experiments",
+      "url": "https://www.semanticscholar.org/paper/a49ce1884fd52fb5a9adc1538aee6aba0ce0eb26",
+      "first_listed": "2026-09-20"
+    },
+    "openresearchdataapracticalwayforwardforresearchers": {
+      "title": "Open Research Data: A Practical Way Forward for Researchers",
+      "url": "https://www.semanticscholar.org/paper/315c3373103a14264db3309db9448b7e90f70f73",
+      "first_listed": "2026-09-20"
+    },
+    "machinelearningpredictionandcausalforestanalysisofsevereacutekidneyinjuryinicupatientswithcopdamimicivstudy": {
+      "title": "Machine Learning Prediction and Causal Forest Analysis of Severe Acute Kidney Injury in ICU Patients with COPD: A MIMIC-IV Study.",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/42763706/",
+      "first_listed": "2026-09-20"
+    },
+    "survivalbenefitofdeceaseddonorkidneytransplantationversuscontinueddialysisinternationaltargettrialemulation": {
+      "title": "Survival benefit of deceased donor kidney transplantation versus continued dialysis: international target trial emulation.",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/42759976/",
+      "first_listed": "2026-09-20"
+    },
+    "comparativesafetyofcommonimmunosuppressanttherapiesinsystemiclupuserythematosusatargettrialemulationstudy": {
+      "title": "Comparative Safety of Common Immunosuppressant Therapies in Systemic Lupus Erythematosus: A Target Trial Emulation Study.",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/42750573/",
+      "first_listed": "2026-09-20"
+    },
+    "estimatingtheeffectsofnordicdietsontheriskofmajoradverseliveroutcomesatargettrialemulationacrosstwocohortsinsweden": {
+      "title": "Estimating the effects of Nordic diets on the risk of major adverse liver outcomes: a target trial emulation across two cohorts in Sweden.",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/42749132/",
+      "first_listed": "2026-09-20"
+    },
+    "effectivenessofhighdoseversusstandarddoseinfluenzavaccinesagainsthospitalisationaccordingtofrailtyriskaprespecifiedanalysisoftherandomisedtrialdanflu2": {
+      "title": "Effectiveness of high-dose versus standard-dose influenza vaccines against hospitalisation according to frailty risk: a prespecified analysis of the randomised trial DANFLU-2.",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/42753782/",
+      "first_listed": "2026-09-20"
+    },
+    "heterogeneityinpostoperativesurvivalbenefitassociatedwithneoadjuvanttherapyinesophagealsquamouscellcarcinomaacausalsurvivalforestanalysis": {
+      "title": "Heterogeneity in Postoperative Survival Benefit Associated With Neoadjuvant Therapy in Esophageal Squamous Cell Carcinoma: A Causal Survival Forest Analysis.",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/42745368/",
+      "first_listed": "2026-09-20"
+    },
+    "whenultraprocessedfoodsareeatenthemissingdimensioninexposuremeasurementforobesityresearch": {
+      "title": "When Ultra-Processed Foods are Eaten: The Missing Dimension in Exposure Measurement for Obesity Research.",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/42758431/",
+      "first_listed": "2026-09-20"
+    },
+    "mappingtheglobalevidenceonenvironmentalandclimaticfactorslinkedtohumanfertilityrelatedoutcomesprotocolforascopingreview": {
+      "title": "Mapping the Global Evidence on Environmental and Climatic Factors Linked to Human Fertility-Related Outcomes: Protocol for a Scoping Review.",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/42735376/",
+      "first_listed": "2026-09-20"
+    },
+    "avaluebasedhealthcarematernityprogramandperinataloutcomesinbrazil": {
+      "title": "A Value-Based Health Care Maternity Program and Perinatal Outcomes in Brazil.",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/42747049/",
+      "first_listed": "2026-09-20"
+    },
+    "modelingprepregnancybodymassindexasacontinuousexposureforobstetricandneonataloutcomesapopulationbasedanalysisof34millionbirths": {
+      "title": "Modeling prepregnancy body mass index as a continuous exposure for obstetric and neonatal outcomes: a population-based analysis of 3.4 million births.",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/42624404/",
+      "first_listed": "2026-09-20"
+    },
+    "congenitalheartdefectsinchildrenconceivedthroughassistedreproductivetechnologyasystematicreviewandmetaanalysis": {
+      "title": "Congenital heart defects in children conceived through assisted reproductive technology: a systematic review and meta-analysis.",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/42754249/",
+      "first_listed": "2026-09-20"
+    },
+    "associationofdepressionandantidepressanttreatmentwithpregnancyoutcomesininfertilitycare": {
+      "title": "Association of depression and antidepressant treatment with pregnancy outcomes in infertility care.",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/42735740/",
+      "first_listed": "2026-09-20"
+    },
+    "ovarianresponsetocontrolledovarianstimulationformedicalfertilitypreservationaretrospectivecomparisonofoncologicalandbenignindications": {
+      "title": "Ovarian response to controlled ovarian stimulation for medical fertility preservation: a retrospective comparison of oncological and benign indications.",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/42762854/",
+      "first_listed": "2026-09-20"
+    },
+    "epigeneticenvironmentalandsexspecificprogrammingoflongtermhealthinassistedreproductivetechnologiesconceivedoffspring": {
+      "title": "Epigenetic, environmental, and sex-specific programming of long-term health in Assisted Reproductive Technologies-conceived offspring†.",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/42421237/",
+      "first_listed": "2026-09-20"
+    },
+    "dietaryguidelineadherenceandallcausemortalityatargettrialemulationofuniversalandequitytargetedstrategiesamongcanadianadults": {
+      "title": "Dietary Guideline Adherence and All-Cause Mortality: A Target Trial Emulation of Universal and Equity-Targeted Strategies Among Canadian Adults.",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/42735866/",
+      "first_listed": "2026-09-20"
+    },
+    "identificationandestimationofcausalestimandswithmissingnotatrandomdata": {
+      "title": "Identification and Estimation of Causal Estimands with Missing Not at Random Data",
+      "url": "https://arxiv.org/abs/2609.20113v1",
+      "first_listed": "2026-09-20"
+    },
+    "identificationofcausalpolicyeffectsforspatialexposurefields": {
+      "title": "Identification of causal policy effects for spatial exposure fields",
+      "url": "https://www.semanticscholar.org/paper/2129c1acb59ff139c7f1f942e866e448ac9566c0",
+      "first_listed": "2026-09-20"
     }
   }
 }
