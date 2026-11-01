@@ -2110,6 +2110,311 @@
       "title": "Precision Nutrition and Health Outcomes Across the Lifespan",
       "url": "https://www.semanticscholar.org/paper/156918afdd8248fe1528bdfef7c8fbbe2c335157",
       "first_listed": "2026-10-25"
+    },
+    "clinicalheterogeneityandaveragetreatmenteffectsconsequencesforsuperiorityandnoninferioritytrials": {
+      "title": "Clinical heterogeneity and average treatment effects: consequences for superiority and non-inferiority trials.",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/42966613/",
+      "first_listed": "2026-11-01"
+    },
+    "causalinferencewithmissingexposuresandmissingoutcomes": {
+      "title": "Causal Inference with Missing Exposures and Missing Outcomes.",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/42950419/",
+      "first_listed": "2026-11-01"
+    },
+    "flatwhitefromtargettrialemulationtofederatedhighthroughputcausalmachinelearningusingdecentralizedrealworlddata": {
+      "title": "FLAT-WHITE: from target trial emulation to federated high-throughput causal machine learning using decentralized real-world data.",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/42946784/",
+      "first_listed": "2026-11-01"
+    },
+    "heterogeneityoftreatmenteffectofabcpathwaybasedcareinolderatrialfibrillationinsightsfromthemafaiiandmiracleaftrialsusingacausalmachinelearningapproach": {
+      "title": "Heterogeneity of Treatment Effect of ABC Pathway-Based Care in Older Atrial Fibrillation: Insights from the mAFA-II and MIRACLE-AF Trials Using a Causal Machine Learning Approach.",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/42963029/",
+      "first_listed": "2026-11-01"
+    },
+    "covariateselectioninphysicalactivityepidemiologytoolittletoomuchorjustright": {
+      "title": "Covariate Selection in Physical Activity Epidemiology: Too Little, Too Much, or Just Right?",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/42826927/",
+      "first_listed": "2026-11-01"
+    },
+    "invitrofertilizationorintrauterineinseminationinunexplainedinfertility": {
+      "title": "In Vitro Fertilization or Intrauterine Insemination in Unexplained Infertility.",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/42950222/",
+      "first_listed": "2026-11-01"
+    },
+    "endometriosisinivficsiclinicaloutcomescumulativelivebirthandapragmaticnarrativereviewforpatientcounselingandmanagement": {
+      "title": "Endometriosis in IVF/ICSI: Clinical Outcomes, Cumulative Live Birth, and a Pragmatic Narrative Review for Patient Counseling and Management.",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/42937228/",
+      "first_listed": "2026-11-01"
+    },
+    "doestimelapseimagingtliofembryosimprovereproductiveoutcomesininvitrofertilisationivfintracytoplasmicsperminjectionicsiindividualparticipantdataipdmetaanalysis": {
+      "title": "Does time-lapse imaging (TLI) of embryos improve reproductive outcomes in in vitro fertilisation (IVF)/intracytoplasmic sperm injection (ICSI)? Individual participant data (IPD) meta-analysis.",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/42955792/",
+      "first_listed": "2026-11-01"
+    },
+    "theimpactofanovulatoryconceptioncycleonfirsttrimesteruterinearterypulsatilityindexandpreeclampsiarisk": {
+      "title": "The impact of anovulatory conception cycle on first-trimester uterine artery pulsatility index and preeclampsia risk.",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/42950944/",
+      "first_listed": "2026-11-01"
+    },
+    "nonlinearsufficientdimensionreductionforcausalinferencewithcontinuoustreatments": {
+      "title": "Nonlinear Sufficient Dimension Reduction for Causal Inference with Continuous Treatments",
+      "url": "https://www.semanticscholar.org/paper/b3c03788e31e8065a39af7b0358316684bbfa20b",
+      "first_listed": "2026-11-01"
+    },
+    "notjustwhybutwhenandforwhomrevisitingcommonestimandsincausalinference": {
+      "title": "Not Just Why, but When and for Whom: Revisiting Common Estimands in Causal Inference",
+      "url": "https://www.semanticscholar.org/paper/ab0bc1a329db4373d40bec8c4ec751dc782b065f",
+      "first_listed": "2026-11-01"
+    },
+    "estimatedeffectofearlyneurologicaldeteriorationonmortalityandpoorfunctionaloutcomeafterintracerebralhemorrhageacausalinferenceanalysis": {
+      "title": "Estimated Effect of Early Neurological Deterioration on Mortality and Poor Functional Outcome After Intracerebral Hemorrhage: A Causal Inference Analysis",
+      "url": "https://www.semanticscholar.org/paper/4263697c83373715598fcdb38feec4d5bb6a1165",
+      "first_listed": "2026-11-01"
+    },
+    "artificialintelligenceandresearchintegrityinreproductivemedicinereproducibilitytransparencyaccountabilityandresponsibletranslation": {
+      "title": "Artificial intelligence and research integrity in reproductive medicine: reproducibility, transparency, accountability, and responsible translation",
+      "url": "https://www.semanticscholar.org/paper/9dc80eebcad39e6a3109af4205fec714378d0029",
+      "first_listed": "2026-11-01"
+    },
+    "debiasingfunctionalsofconditionaldistributions": {
+      "title": "Debiasing Functionals of Conditional Distributions",
+      "url": "https://www.semanticscholar.org/paper/5af7831dc2e4bf7b818a1b6519116025316297f7",
+      "first_listed": "2026-11-01"
+    },
+    "inferenceforcausalpathspecificeffectsinlongitudinalstudieswithrepeatedtreatmentsandmultiplemediators": {
+      "title": "Inference for Causal Path-Specific Effects in Longitudinal Studies with Repeated Treatments and Multiple Mediators",
+      "url": "https://www.semanticscholar.org/paper/974b3adcda27b1b2331c9a6bea1cd08bfa7e999c",
+      "first_listed": "2026-11-01"
+    },
+    "frompredictiontointerventioncausalartificialintelligenceasthemissinglinkinprecisiontherapeutics": {
+      "title": "From prediction to intervention: Causal artificial intelligence as the missing link in precision therapeutics",
+      "url": "https://www.semanticscholar.org/paper/2c951e5620a01f7781c5271c5a892b2023cd951b",
+      "first_listed": "2026-11-01"
+    },
+    "distributionfreepredictiveinferencewithinstrumentalvariables": {
+      "title": "Distribution-free predictive inference with instrumental variables",
+      "url": "https://www.semanticscholar.org/paper/785970c86a3b1a408852dbc26c5191c014ccc309",
+      "first_listed": "2026-11-01"
+    },
+    "ehdppexposuredrivesovarianreservedeclineviametabolicperturbationsevidencefromepidemiologicalandinvivostudies": {
+      "title": "EHDPP Exposure Drives\nOvarian Reserve Decline via\nMetabolic Perturbations: Evidence from Epidemiological and In Vivo\nStudies",
+      "url": "https://www.semanticscholar.org/paper/115fbbf54a1156dbdfb8044e59f8882f1a133f90",
+      "first_listed": "2026-11-01"
+    },
+    "informingsamplesizeandpowercalculationsforclonecensorweightanalysesamontecarlosimulationstudyofthevarianceinflationfactorrelativetotheunderlyingtargettrial": {
+      "title": "Informing sample size and power calculations for clone-censor-weight analyses: a Monte Carlo simulation study of the variance inflation factor relative to the underlying target trial.",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/42962903/",
+      "first_listed": "2026-11-01"
+    },
+    "associationbetweenpathologicalsubtypesofpitnetsandpostoperativebiochemicalremissioninacromegaly": {
+      "title": "Association between pathological subtypes of PitNETs and postoperative biochemical remission in acromegaly.",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/42965779/",
+      "first_listed": "2026-11-01"
+    },
+    "realworldassessmentoftheeffectivenessandresponseprofilesofbiologicdmardsinpsoriaticarthritisfindingsfromanemulatedmulticentreclinicaltrial": {
+      "title": "Real‑world assessment of the effectiveness and response profiles of biologic DMARDs in psoriatic arthritis: findings from an emulated multicentre clinical trial.",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/42951730/",
+      "first_listed": "2026-11-01"
+    },
+    "nonsteroidalantiinflammatorydrugversusacetaminopheninitiationatinfluenzadiagnosisand14dayneuropsychiatricdiagnosesinadultsatargettrialemulationusingjapaneseclaimsdata": {
+      "title": "Non-Steroidal Anti-Inflammatory Drug Versus Acetaminophen Initiation at Influenza Diagnosis and 14-Day Neuropsychiatric Diagnoses in Adults: A Target Trial Emulation Using Japanese Claims Data.",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/42952435/",
+      "first_listed": "2026-11-01"
+    },
+    "heterogeneityintheeffectsofweightreductiononpainandphysicalfunctioninkneeosteoarthritisacausalforestanalysisoftheosteoarthritisinitiative": {
+      "title": "Heterogeneity In The Effects of Weight Reduction on Pain And Physical Function In Knee Osteoarthritis: A causal forest analysis of the Osteoarthritis Initiative.",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/42947545/",
+      "first_listed": "2026-11-01"
+    },
+    "differentialeffectofendovasculartreatmentinmediumordistalvesselocclusionadistalsecondaryanalysis": {
+      "title": "Differential Effect of Endovascular Treatment in Medium or Distal Vessel Occlusion: A Distal Secondary Analysis.",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/42961033/",
+      "first_listed": "2026-11-01"
+    },
+    "technologyuseandhearingcareinterventionoutcomesasecondaryanalysisofarandomizedclinicaltrial": {
+      "title": "Technology Use and Hearing Care Intervention Outcomes: A Secondary Analysis of a Randomized Clinical Trial.",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/42954970/",
+      "first_listed": "2026-11-01"
+    },
+    "integrativemachinelearningforidentifyingtranscriptomicsignaturesofneoadjuvantchemoradiotherapyresponseinlocallyadvancedrectalcancer": {
+      "title": "Integrative machine learning for identifying transcriptomic signatures of neoadjuvant chemoradiotherapy response in locally advanced rectal cancer.",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/42964907/",
+      "first_listed": "2026-11-01"
+    },
+    "investigationofindividualandcohortleveltemporalchangestolegacyandemergingendocrinedisruptingchemicalexposuresandtheirrelationshipwithbirthoutcomes": {
+      "title": "Investigation of individual and cohort-level temporal changes to legacy and emerging endocrine disrupting chemical exposures and their relationship with birth outcomes.",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/42963360/",
+      "first_listed": "2026-11-01"
+    },
+    "indoorno": {
+      "title": "Indoor NO",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/42956632/",
+      "first_listed": "2026-11-01"
+    },
+    "disparitiesinenvironmentalchemicalconcentrationsandadversepregnancyoutcomesbyraceandethnicityandcountryofbirthexamplesfromthemirecstudy": {
+      "title": "Disparities in Environmental Chemical Concentrations and Adverse Pregnancy Outcomes by Race and Ethnicity and Country of Birth: Examples from the MIREC Study.",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/42932128/",
+      "first_listed": "2026-11-01"
+    },
+    "assessingehrcohortfitnesswithpartiallypairedregistrydataanewstatisticalapproachappliedtomaternalhealthinoneflorida": {
+      "title": "Assessing EHR Cohort Fitness With Partially Paired Registry Data: A New Statistical Approach Applied to Maternal Health in OneFlorida.",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/42966850/",
+      "first_listed": "2026-11-01"
+    },
+    "impactofgestationaldiabetesmellitusandassistedreproductivetechnologyonmaternalandneonataloutcomesintwinpregnanciesamulticentreretrospectivestudyinchina": {
+      "title": "Impact of gestational diabetes mellitus and assisted reproductive technology on maternal and neonatal outcomes in twin pregnancies: A multicentre retrospective study in China.",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/42965900/",
+      "first_listed": "2026-11-01"
+    },
+    "causaleffectsofphysicalactivityandsedentarybehaviorsonhypertensivedisordersofpregnancyatwosamplemendelianrandomizationstudy": {
+      "title": "Causal effects of physical activity and sedentary behaviors on hypertensive disorders of pregnancy: a two-sample Mendelian randomization study.",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/42965376/",
+      "first_listed": "2026-11-01"
+    },
+    "phospholipaseczeta1supportspostfertilizationembryodevelopmentbeyondoocyteactivationevidencefromspermmrnaanalysisandfunctionalstudies": {
+      "title": "Phospholipase C Zeta 1 Supports Post-Fertilization Embryo Development beyond Oocyte Activation: Evidence from Sperm mRNA Analysis and Functional Studies.",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/42961595/",
+      "first_listed": "2026-11-01"
+    },
+    "theimpactofhighintensityfocusedultrasoundonovarianreserveinwomenwithuterinefibroidsandadenomyosisasystematicreviewandsinglearmmetaanalysis": {
+      "title": "The Impact of High Intensity Focused Ultrasound on Ovarian Reserve in Women with Uterine Fibroids and Adenomyosis: A Systematic Review and Single Arm Meta-Analysis.",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/42944603/",
+      "first_listed": "2026-11-01"
+    },
+    "earlymenarcheinassociationwithovarianreserveandbiologicalaginginyoungadultsacrosssectionalstudy": {
+      "title": "Early menarche in association with ovarian reserve and biological aging in young adults: a cross-sectional study.",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/42937184/",
+      "first_listed": "2026-11-01"
+    },
+    "associationoffemaleobesitywithovarianresponseandivfoutcomesaretrospectivecohortstudy": {
+      "title": "Association of female obesity with ovarian response and IVF outcomes: a retrospective cohort study.",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/42937222/",
+      "first_listed": "2026-11-01"
+    },
+    "doesblastocysttransferhaveahigherlivebirthratethancleavagestageembryotransferinpatientswithdelayedinvitroblastocystdevelopment": {
+      "title": "Does blastocyst transfer have a higher live birth rate than cleavage-stage embryo transfer in patients with delayed in vitro blastocyst development?",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/42955222/",
+      "first_listed": "2026-11-01"
+    },
+    "bleedingrelatedperinataloutcomesfollowinghormonereplacementcyclefrozenembryotransfercomparedwithnonartfreshembryotransferandovulatorycyclefrozenembryotransferasinglecentercohortstudy": {
+      "title": "Bleeding-Related Perinatal Outcomes Following Hormone Replacement Cycle Frozen Embryo Transfer Compared With Non-ART, Fresh Embryo Transfer, and Ovulatory-Cycle Frozen Embryo Transfer: A Single-Center Cohort Study.",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/42964455/",
+      "first_listed": "2026-11-01"
+    },
+    "vaginalendometrialmicrobiomesynchronyasapredictorofimplantationinfrozenembryotransfercyclesaprospectivestudy": {
+      "title": "Vaginal-Endometrial Microbiome Synchrony as a Predictor of Implantation in Frozen Embryo Transfer Cycles: A Prospective Study.",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/42937224/",
+      "first_listed": "2026-11-01"
+    },
+    "dietarypatternsandadversepregnancyoutcomescomplementaryinsightsfromaprioriandaposterioriapproachesinaprospectivecohort": {
+      "title": "Dietary patterns and adverse pregnancy outcomes: Complementary insights from a priori and a posteriori approaches in a prospective cohort.",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/42858697/",
+      "first_listed": "2026-11-01"
+    },
+    "theeffectofhomeversusincentredialysisonpatientreportedandclinicaloutcomesatargettrialemulationstudy": {
+      "title": "The effect of home versus in-centre dialysis on patient-reported and clinical outcomes: a target trial emulation study",
+      "url": "https://www.semanticscholar.org/paper/b3e67f109015ecc1b8ea4619ab56451d43d19a3e",
+      "first_listed": "2026-11-01"
+    },
+    "arthroplastyversusinternalfixationfordisplacedfemoralneckfracturesinolderpatientswithdementiaatargettrialemulationstudy": {
+      "title": "Arthroplasty versus internal fixation for displaced femoral neck fractures in older patients with dementia: a target trial emulation study",
+      "url": "https://www.semanticscholar.org/paper/c00ae7d42fadfae35ade7acb3f3e09ee5d2d55f1",
+      "first_listed": "2026-11-01"
+    },
+    "realworldeffectivenessofpaxlovidinprotectinglongcovidforoutpatientadultpatientsatargettrialemulationstudyfromtherecoverinitiative": {
+      "title": "Real-world effectiveness of Paxlovid in protecting Long COVID for outpatient adult patients: A target trial emulation study from the RECOVER Initiative",
+      "url": "https://www.semanticscholar.org/paper/6281cf468d7e852ebad89a633b61b699467e7205",
+      "first_listed": "2026-11-01"
+    },
+    "multisystemoutcomesofglp1receptoragonistsversusactivecomparatorsintype2diabetesamulticentertargettrialemulation": {
+      "title": "Multisystem Outcomes of GLP-1 Receptor Agonists Versus Active Comparators in Type 2 Diabetes: A Multicenter Target Trial Emulation.",
+      "url": "https://www.semanticscholar.org/paper/9d069c9931b44d55cb05453be7bb02cda9f1ea93",
+      "first_listed": "2026-11-01"
+    },
+    "preventiveeffectofsmokingcessationondiabetesonsetatargettrialemulationapproach": {
+      "title": "Preventive Effect of Smoking Cessation on Diabetes Onset: A Target Trial Emulation Approach.",
+      "url": "https://www.semanticscholar.org/paper/e92b442c1a7a55db5847d7968fc143fd8b398890",
+      "first_listed": "2026-11-01"
+    },
+    "selectionofdoublemachinelearningforcausaleffectestimationunderweakidentification": {
+      "title": "Selection of Double Machine Learning for Causal Effect Estimation under Weak Identification",
+      "url": "https://www.semanticscholar.org/paper/c73da117d6b4dbe773679c28a488289df66c0fb8",
+      "first_listed": "2026-11-01"
+    },
+    "personalizedphysiotherapyeffectmodelingwithcontinuouscausalmachinelearning": {
+      "title": "Personalized physiotherapy effect modeling with continuous causal machine learning",
+      "url": "https://www.semanticscholar.org/paper/306a96ebe9695884d49c36697ce490cd565a4485",
+      "first_listed": "2026-11-01"
+    },
+    "shapepreservingtreatmenteffectsforfunctionaloutcomes": {
+      "title": "Shape-Preserving Treatment Effects for Functional Outcomes",
+      "url": "https://www.semanticscholar.org/paper/d347a236c68f2b68e160e14a94ece55cde9fab6a",
+      "first_listed": "2026-11-01"
+    },
+    "jointcovariatebalancingfordifferenceindifferenceswithmissingoutcomeevolutions": {
+      "title": "Joint Covariate Balancing for Difference-in-Differences with Missing Outcome Evolutions",
+      "url": "https://www.semanticscholar.org/paper/43e70deef07c9d89f55f9f24448d38986bf9ecbe",
+      "first_listed": "2026-11-01"
+    },
+    "assessingthecausalinfluenceofsocioeconomicstatusoncervicalcancersurvivalusingtheseerdatabase": {
+      "title": "Assessing the causal influence of socioeconomic status on cervical cancer survival using the SEER database",
+      "url": "https://www.semanticscholar.org/paper/2670e8f4b8e0a5fdb730af0aa339d1e0dd13f5aa",
+      "first_listed": "2026-11-01"
+    },
+    "globalminimaxratesforheterogeneoustreatmenteffectestimation": {
+      "title": "Global minimax rates for heterogeneous treatment effect estimation",
+      "url": "https://www.semanticscholar.org/paper/1a8d17ffb24fb43db9f36650674b441ba44fa2c4",
+      "first_listed": "2026-11-01"
+    },
+    "theeffectofresidualconfoundingintheanalysisoflargeobservationaldatasets": {
+      "title": "The Effect of Residual Confounding in the Analysis of Large Observational Data Sets",
+      "url": "https://www.semanticscholar.org/paper/d39bab5ac2ba844e1c90810a9e58c2ae005c0c34",
+      "first_listed": "2026-11-01"
+    },
+    "correctnessconditioningasselectioninchainofthoughtfaithfulnessevaluation": {
+      "title": "Correctness Conditioning as Selection in Chain-of-Thought Faithfulness Evaluation",
+      "url": "https://www.semanticscholar.org/paper/4feb9273d28ace938cb576cd024e811263f7aa75",
+      "first_listed": "2026-11-01"
+    },
+    "realworldsurgicaloutcomesofsegmentectomyvslobectomyinolderadultswithsmallstageiansclclongtermcancerspecificandcompetingmortalityinanoverlapweightedseercohort": {
+      "title": "Real-world surgical outcomes of segmentectomy vs. lobectomy in older adults with small stage IA NSCLC: long-term cancer-specific and competing mortality in an overlap-weighted SEER cohort",
+      "url": "https://www.semanticscholar.org/paper/acfb2f92a095c891ca9f97690a3d430b7268f756",
+      "first_listed": "2026-11-01"
+    },
+    "artificialintelligencedrivenpredictionofadversematernalandperinataloutcomesdevelopmentandvalidationofapersonalizedriskassessmentmodel": {
+      "title": "Artificial Intelligence–Driven Prediction of Adverse Maternal and Perinatal Outcomes: Development and Validation of a Personalized Risk Assessment Model",
+      "url": "https://www.semanticscholar.org/paper/83321abf7388dc0fef64f3e40af94def7fbb3b73",
+      "first_listed": "2026-11-01"
+    },
+    "bloodpressurechangesacrosspregnancyandpostpartumfromphysiologicaladaptationstopathologicaldeviations": {
+      "title": "Blood pressure changes across pregnancy and postpartum: from physiological adaptations to pathological deviations",
+      "url": "https://www.semanticscholar.org/paper/8c7981cc886b054ba2faab28384e1411b8b7999b",
+      "first_listed": "2026-11-01"
+    },
+    "theimprovementeffectofandrogenprimingonfertilityinpatientswithdiminishedovarianreserveanditsimpactoninvitrofertilizationoutcomesasystematicreviewandmetaanalysis": {
+      "title": "The improvement effect of androgen priming on fertility in patients with diminished ovarian reserve and its impact on in vitro fertilization outcomes: a systematic review and meta-analysis",
+      "url": "https://www.semanticscholar.org/paper/1c53da518306de55fc33beeca70149ace45387c1",
+      "first_listed": "2026-11-01"
+    },
+    "gatekeepersofovarianfatethemolecularlandscapeofdiminishedovarianreserve": {
+      "title": "Gatekeepers of ovarian fate: the molecular landscape of diminished ovarian reserve",
+      "url": "https://www.semanticscholar.org/paper/31b191405c52a7af02e13b12cb35dd43e6e69bbc",
+      "first_listed": "2026-11-01"
+    },
+    "sequentialejaculatedandtesticularspermicsicyclesincoupleswithprioricsifailureawithinpairanalysisofembryoqualityeuploidyandlivebirth": {
+      "title": "Sequential ejaculated- and testicular-sperm ICSI cycles in couples with prior ICSI failure: a within-pair analysis of embryo quality, euploidy, and live birth",
+      "url": "https://www.semanticscholar.org/paper/d0cd64b7e75fcb5259a2889b88acd64155f58f77",
+      "first_listed": "2026-11-01"
+    },
+    "triggerdayprogesteronetomatureoocyteratiocyclelevelblastocystyieldandrecordedembryotransferoutcomesaretrospectivecohortstudy": {
+      "title": "Trigger-day progesterone-to-mature-oocyte ratio, cycle-level blastocyst yield, and recorded embryo-transfer outcomes: a retrospective cohort study",
+      "url": "https://www.semanticscholar.org/paper/c5835c96aa7417121383aedc9ef21198cd2e8a2a",
+      "first_listed": "2026-11-01"
+    },
+    "endometrialcompactionandongoingpregnancyinmodifiednaturalcyclefrozeneuploidembryotransferaprospectivemulticentrecohortstudywithstandardizedtransvaginalultrasoundassessment": {
+      "title": "Endometrial compaction and ongoing pregnancy in modified natural cycle frozen euploid embryo transfer: a prospective multicentre cohort study with standardized transvaginal ultrasound assessment.",
+      "url": "https://www.semanticscholar.org/paper/0eadb0fb129516fe5e50e14bd4d8b708a1f300df",
+      "first_listed": "2026-11-01"
     }
   }
 }
